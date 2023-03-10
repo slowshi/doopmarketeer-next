@@ -1,7 +1,7 @@
 import { UndoopedDoodle } from '@/interfaces/Undooped'
 import { GemResponse } from '@/interfaces/Gem'
 import { Wearable, DooplicatorWearables } from '@/interfaces/Doodle'
-import { cacheGet } from '@/utils/cacheGet'
+import { cacheFetch } from '@/utils/cacheFetch'
 import { DOOPLICATOR_WEARABLES_URL } from '@/utils/constants'
 import { getGemAssets } from './Gem'
 
@@ -13,7 +13,7 @@ const getUndoopedDoodles = async (page: number, limit = 20): Promise<UndoopedDoo
   let undooped: UndoopedDoodle[] = []
   for (let i = 0; i < response.length; i++) {
     const { tokenId, marketUrl, currentBasePrice, supportsWyvern } = response[i]
-    const wearablesResponse = (await cacheGet(`${DOOPLICATOR_WEARABLES_URL}/${tokenId}`)) as DooplicatorWearables
+    const wearablesResponse = (await cacheFetch(`${DOOPLICATOR_WEARABLES_URL}/${tokenId}`)) as DooplicatorWearables
     const isDooplicated =
       wearablesResponse.wearables.filter((wearable: Wearable) => typeof wearable.wearable_id === 'undefined').length ===
       0

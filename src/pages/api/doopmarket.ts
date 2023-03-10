@@ -5,7 +5,7 @@ import { getContrat } from '../../utils/ethersUtils'
 import { DoopmarketListing, Listing } from '../../interfaces/DoopMarket'
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse<Data>) {
-  const doopmarketContract = await getContrat(DOOPMARKET_ADDRESS, DoopmarketABI)
+  const doopmarketContract = getContrat(DOOPMARKET_ADDRESS, DoopmarketABI)
   const listing = await doopmarketContract.getListings(DOOPLICATOR_ADDRESS, DOODLE_ADDRESS)
   const jsonStringify = JSON.stringify(listing, (key, value) => (typeof value === 'bigint' ? value.toString() : value))
   const jsonParse = JSON.parse(jsonStringify)

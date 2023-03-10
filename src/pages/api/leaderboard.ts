@@ -19,7 +19,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
       )
     })
     .reduce((acc: LeaderboardMap, item: Transaction) => {
-      console.log('reducing')
       let user: LeaderboardUser = {
         timeStamp: 0,
         address: '',

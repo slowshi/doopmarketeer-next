@@ -1,5 +1,7 @@
-import { ethers, JsonRpcProvider, Contract } from 'ethers'
-import { ETHEREUM_RPC_URL } from './constants'
+import { ethers, JsonRpcProvider, Contract, formatUnits } from 'ethers'
+import { ETHEREUM_RPC_URL, currencyMap } from './constants'
+import CurrencyAbi from '../abis/CurrencyABI.json'
+import { cacheServiceInstance } from './CacheService'
 
 const resolveENS = async (name: string) => {
   const provider = new JsonRpcProvider(ETHEREUM_RPC_URL)
@@ -11,9 +13,28 @@ const getBlockNumber = async () => {
   return await provider.getBlockNumber()
 }
 
-const getContrat = async (contract: string, abi: ethers.InterfaceAbi) => {
+const getContrat = (contract: string, abi: ethers.InterfaceAbi) => {
   const provider = new JsonRpcProvider(ETHEREUM_RPC_URL)
-  const doopmarketContract = new Contract(contract, abi, provider)
-  return doopmarketContract
+  return new Contract(contract, abi, provider)
 }
-export { resolveENS, getBlockNumber, getContrat }
+
+const getCurrencyConversion = async (currencyKey = 'usd') => {
+  if (currencyKey === 'usd') return 1
+
+  if (
+    cacheServiceInstance.has(currencyKey) &&
+    !cacheServiceInstance.isExpired(currencyKey, 300) &&
+    cacheServiceInstance.get(currencyKey)
+  ) {
+    return cacheServiceInstance.get(currencyKey)
+  }
+  const currencyAddress = currencyMap[currencyKey].address
+  const currencyContract = getContrat(currencyAddress, CurrencyAbi, ETHEREUM_RPC_URL)
+  let latestAnswer = await currencyContract.latestAnswer()
+  latestAnswer = Number(formatUnits(latestAnswer, 8))
+  cacheServiceInstance.set(currencyKey, latestAnswer)
+
+  return latestAnswer
+}
+
+export { resolveENS, getBlockNumber, getContrat, getCurrencyConversion }
