@@ -3,7 +3,7 @@ import '@/styles/globals.css'
 import { ChakraProvider } from '@chakra-ui/react'
 import { Provider } from 'react-redux'
 import { extendTheme } from '@chakra-ui/react'
-import store from '../redux/store'
+import { useStore } from '@/redux/store'
 
 const theme = extendTheme({
   fonts: {
@@ -13,6 +13,8 @@ const theme = extendTheme({
 })
 
 export default function App({ Component, pageProps }: AppProps) {
+  const store = useStore(pageProps.initialReduxState)
+
   return (
     <Provider store={store}>
       <ChakraProvider theme={theme}>

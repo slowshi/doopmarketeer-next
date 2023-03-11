@@ -11,11 +11,10 @@ import SearchBar from '../components/SearchBar'
 import DoodleSpinner from '../components/DoodleSpinner'
 import SingleDoop from '../components/SingleDoop'
 import DooplicatorCard from '../components/DooplicatorCard'
+import { fetchCurrencies, loadSearchParams } from '@/redux/actions'
 export default function Search() {
   const dispatch = useDispatch()
   const router = useRouter()
-
-  const [searchParamsAddress, setSearchParamsAddress] = useState('')
   const loading = useSelector((state) => state.app.searchLoading)
   const searchValue = useSelector((state) => state.app.searchValue)
   const searchType = useSelector((state) => state.app.searchType)
@@ -23,7 +22,8 @@ export default function Search() {
   const handleSearchBar = async ({ value, type }) => {
     if (value === '') return
     if (type === searchTypes.DOODLE && isNaN(value)) return
-
+    const currentSearch = `${searchType}:${searchValue}`
+    const newSearch = `${type}:${value}`
     dispatch({
       type: 'setSearchLoading',
       payload: true,
@@ -41,7 +41,7 @@ export default function Search() {
       [type]: value,
     })
     const url = `/search?${searchParams}`
-    if (searchParamsAddress === `${type}:${value}`) {
+    if (currentSearch === newSearch) {
       router.replace(url)
     } else {
       router.push(url)
@@ -54,40 +54,9 @@ export default function Search() {
       type: 'setActiveMarketTab',
       payload: marketTabs.SEARCH,
     })
-    loadAddress()
-    function loadAddress() {
-      const searchParams = new URL(document.location).searchParams
-      let type = ''
-      let value = ''
-      if (searchParams.has(searchTypes.ADDRESS)) {
-        type = searchTypes.ADDRESS
-        value = searchParams.get(searchTypes.ADDRESS)
-      } else if (searchParams.has(searchTypes.DOOPLICATOR)) {
-        type = searchTypes.DOOPLICATOR
-        value = searchParams.get(searchTypes.DOOPLICATOR)
-      } else if (searchParams.has(searchTypes.DOODLE)) {
-        type = searchTypes.DOODLE
-        value = searchParams.get(searchTypes.DOODLE)
-      } else if (searchParams.has(searchTypes.GENESIS_BOX)) {
-        type = searchTypes.GENESIS_BOX
-        value = searchParams.get(searchTypes.GENESIS_BOX)
-      }
-      if (type !== '') {
-        dispatch({
-          type: 'setSearchLoading',
-          payload: true,
-        })
-        dispatch({
-          type: 'setSearchType',
-          payload: type,
-        })
-        dispatch({
-          type: 'setSearchValue',
-          payload: value,
-        })
-        setSearchParamsAddress(`${type}:${value}`)
-      }
-    }
+
+    dispatch(fetchCurrencies())
+    dispatch(loadSearchParams())
 
     return () => {
       dispatch({
@@ -103,7 +72,7 @@ export default function Search() {
         payload: [],
       })
     }
-  }, [router.query])
+  }, [router.query, dispatch])
 
   return (
     <>

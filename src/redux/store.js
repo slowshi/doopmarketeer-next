@@ -1,25 +1,31 @@
-import { createStore } from 'redux'
-import rootReducer from './reducers/rootReducer'
+import { useMemo } from 'react'
+import { createStore, applyMiddleware } from 'redux'
+import { composeWithDevTools } from 'redux-devtools-extension'
+import thunkMiddleware from 'redux-thunk'
+import reducers from './reducers/rootReducer'
 
-const store = createStore(rootReducer, {
-  app: {
-    ethPrice: 0,
-    flowPrice: 0,
-    address: '',
-    searchValue: '',
-    searchType: 'address',
-    searchLoading: false,
-    dooplications: [],
-    doopMarket: [],
-    assets: {},
-    dooplicatorAssets: {},
-    leaderboard: [],
-    undoopedDoodles: [],
-    undoopedDooplicators: [],
-    feed: [],
-    activeMarketTab: '',
-    leaderboardSort: 'totalDoops',
-  },
-})
+let store
+function initStore(initialState) {
+  return createStore(reducers, initialState, composeWithDevTools(applyMiddleware(thunkMiddleware)))
+}
 
-export default store
+export const initializeStore = (preloadedState) => {
+  let _store = store ?? initStore(preloadedState)
+  if (preloadedState && store) {
+    _store = initStore({
+      ...store.getState(),
+      ...preloadedState,
+    })
+    store = undefined
+  }
+
+  if (typeof window === 'undefined') return _store
+  if (!store) store = _store
+
+  return _store
+}
+
+export function useStore(initialState) {
+  const store = useMemo(() => initializeStore(initialState), [initialState])
+  return store
+}

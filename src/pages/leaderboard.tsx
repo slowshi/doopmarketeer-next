@@ -21,10 +21,11 @@ import ScrollToTop from '@/components/ScrollToTop'
 import Nav from '@/components/Nav'
 import DoodleSpinner from '@/components/DoodleSpinner'
 import NextLink from 'next/link'
+import { fetchCurrencies, fetchLeaderboard } from '@/redux/actions'
 
 export default function Leaderbaord() {
   const dispatch = useDispatch()
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(true)
   const totalDoopers = useSelector((state) => state.app.leaderboard.length)
   const totalDoops = useSelector((state) =>
     state.app.leaderboard.reduce((acc, user) => {
@@ -72,16 +73,6 @@ export default function Leaderbaord() {
   }
   const leaderboard = useSelector(leaderboardSelector, shallowEqual)
 
-  async function fetchAssets() {
-    setLoading(true)
-    const data = await cacheFetch(`${API_URL}/leaderboard`)
-    dispatch({
-      type: 'setLeaderboard',
-      payload: data,
-    })
-    setLoading(false)
-  }
-
   const sortLeaderboard = (data) => {
     dispatch({
       type: 'sortLeaderboard',
@@ -90,13 +81,18 @@ export default function Leaderbaord() {
   }
 
   useEffect(() => {
-    document.title = 'Doopmarketeer | Leaderboard'
-    dispatch({
-      type: 'setActiveMarketTab',
-      payload: marketTabs.LEADERBOARD,
-    })
-    fetchAssets()
-  }, [])
+    ;(async () => {
+      document.title = 'Doopmarketeer | Leaderboard'
+      dispatch({
+        type: 'setActiveMarketTab',
+        payload: marketTabs.LEADERBOARD,
+      })
+      dispatch(fetchCurrencies())
+      setLoading(true)
+      await dispatch(fetchLeaderboard())
+      setLoading(false)
+    })()
+  }, [dispatch])
   const fontSize = useBreakpointValue({ base: 'sm', sm: 'md' })
 
   return (

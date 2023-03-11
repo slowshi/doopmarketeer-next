@@ -28,6 +28,7 @@
     "react-icons": "^4.8.0",
     "react-redux": "^8.0.5",
     "redux": "^4.2.1",
+    "redux-devtools-extension": "^2.13.9",
     "redux-thunk": "^2.4.2",
     "rimraf": "^4.3.1",
     "ts-abi-decoder": "^1.0.7",

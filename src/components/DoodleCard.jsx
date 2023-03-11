@@ -16,9 +16,9 @@ import {
 } from '@chakra-ui/react'
 import { useEffect } from 'react'
 import WearbleImage from './WearableImage'
-import cacheFetch from '@/utils/cacheFetch'
 import { useSelector, useDispatch, shallowEqual } from 'react-redux'
-import { API_URL, currencyMap, DOOPLICATOR_URL, IPFS_GATEWAY, palette } from '@/utils/constants'
+import { currencyMap, IPFS_GATEWAY, palette } from '@/utils/constants'
+import { fetchDoodleCardAssets } from '@/redux/actions'
 import NextLink from 'next/link'
 
 function DoodleCard({ doop }) {
@@ -97,35 +97,13 @@ function DoodleCard({ doop }) {
     setAvatarLoaded.on()
   }
 
-  async function fetchAssets() {
-    const data = await cacheFetch(`${API_URL}/assets/${doop.tokenId}`)
-    dispatch({
-      type: 'addAssets',
-      payload: {
-        tokenId: doop.tokenId,
-        data,
-      },
-    })
-
-    const doopId = doop.dooplicatorId
-    if (doopId !== '' && typeof doopId !== 'undefined') {
-      const data = await cacheFetch(`${DOOPLICATOR_URL}/${doopId}`)
-      dispatch({
-        type: 'addDooplicatorAssets',
-        payload: {
-          tokenId: doopId,
-          data,
-        },
-      })
-    }
-  }
-
   useEffect(() => {
-    fetchAssets()
+    // fetchAssets()
+    dispatch(fetchDoodleCardAssets(doop.tokenId, doop.dooplicatorId))
     return () => {
       setAvatarLoaded.off()
     }
-  }, [doop.tokenId, doop.dooplicatorId])
+  }, [doop.tokenId, doop.dooplicatorId, dispatch, setAvatarLoaded])
 
   return (
     <Card>
@@ -134,7 +112,7 @@ function DoodleCard({ doop }) {
           <Flex>
             <Box me="6">
               <SkeletonCircle w="90px" h="90px" isLoaded={avatarLoaded}>
-                <Image rounded="full" w="90px" src={image} onLoad={imageLoaded}></Image>
+                <Image rounded="full" w="90px" src={image} onLoad={imageLoaded} alt="doodle"></Image>
               </SkeletonCircle>
               <Skeleton height="22px" w="full" isLoaded={avatarLoaded}>
                 <Center>

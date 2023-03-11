@@ -7,11 +7,13 @@ import DoodleCard from '@/components/DoodleCard'
 import { API_URL, marketTabs, palette } from '@/utils/constants'
 import ScrollToTop from '@/components/ScrollToTop'
 import DoodleSpinner from '@/components/DoodleSpinner'
+import { fetchHistory, checkFeed, fetchCurrencies } from '@/redux/actions'
 
 export default function Feed() {
   const dispatch = useDispatch()
-  const [loading, setLoading] = useState(false)
   const [loadingMore, setLoadingMore] = useState(false)
+  // const loading = useSelector((state) => state.app.feedLoading)
+  const [loading, setLoading] = useState(false)
 
   const feed = useSelector((state) => state.app.feed, shallowEqual)
   const latestBlockNumber = useSelector((state) => {
@@ -24,56 +26,45 @@ export default function Feed() {
 
   const [page, setPage] = useState(1)
 
-  const fetchHistory = async () => {
-    setLoading(true)
-    await setPage(1)
-    const data = await cacheFetch(`${API_URL}/history?page=1&limit=5`)
-    dispatch({
-      type: 'setFeed',
-      payload: data,
-    })
-    setLoading(false)
-  }
-
-  const checkFeed = async () => {
-    if (latestBlockNumber === 0) return
-    const data = await cacheFetch(`${API_URL}/feed?startBlock=${latestBlockNumber}`)
-    dispatch({
-      type: 'prependFeed',
-      payload: data,
-    })
-  }
-
   const loadMore = async () => {
     setLoadingMore(true)
-    const data = await cacheFetch(`${API_URL}/history?page=${page + 1}&limit=5`)
-    dispatch({
-      type: 'appendFeed',
-      payload: data,
-    })
+    await dispatch(fetchHistory(page + 1))
     setPage(page + 1)
     setLoadingMore(false)
   }
 
   useEffect(() => {
-    document.title = 'Doopmarketeer | Feed'
-    dispatch({
-      type: 'setActiveMarketTab',
-      payload: marketTabs.FEED,
-    })
-    // fetchHistory()
-    return () => {
+    ;(async () => {
+      document.title = 'Doopmarketeer | Feed'
+      dispatch({
+        type: 'setActiveMarketTab',
+        payload: marketTabs.FEED,
+      })
+      dispatch(fetchCurrencies())
+      setLoading(true)
+      setPage(1)
+
       dispatch({
         type: 'setFeed',
         payload: [],
       })
-    }
-  }, [])
+      await dispatch(fetchHistory(1))
+      setLoading(false)
+      return () => {
+        dispatch({
+          type: 'setFeed',
+          payload: [],
+        })
+      }
+    })()
+  }, [dispatch])
 
   useEffect(() => {
-    const feedInterval = setInterval(checkFeed, 20000)
+    const feedInterval = setInterval(async () => {
+      await dispatch(checkFeed(latestBlockNumber))
+    }, 20000)
     return () => clearInterval(feedInterval)
-  }, [latestBlockNumber])
+  }, [latestBlockNumber, dispatch])
   return (
     <>
       <ScrollToTop />

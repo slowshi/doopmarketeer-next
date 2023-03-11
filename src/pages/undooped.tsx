@@ -17,14 +17,14 @@ import {
 } from '@chakra-ui/react'
 import { useState, useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
-import cacheFetch from '@/utils/cacheFetch'
 import DoodleCard from '@/components/DoodleCard'
 import ScrollToTop from '@/components/ScrollToTop'
-import { API_URL, marketTabs, palette, undoopedTypes } from '@/utils/constants'
+import { marketTabs, palette, undoopedTypes } from '@/utils/constants'
 import Nav from '@/components/Nav'
 import DoodleSpinner from '@/components/DoodleSpinner'
 import DooplicatorCard from '@/components/DooplicatorCard'
 import { useRouter } from 'next/router'
+import { fetchCurrencies, fetchUndooped, fetchUndoopedDooplicators } from '@/redux/actions'
 
 export default function Unused() {
   const titles = {
@@ -61,37 +61,29 @@ export default function Unused() {
     }),
   )
 
-  const fetchUndooped = async () => {
+  const getDoodles = async () => {
     setPage(1)
     setLoading(true)
     dispatch({
       type: 'setUndoopedDoodles',
       payload: [],
     })
-    const data = await cacheFetch(`${API_URL}/doodleFloor?page=1&limit=${limit}`)
-    dispatch({
-      type: 'setUndoopedDoodles',
-      payload: data,
-    })
+    await dispatch(fetchUndooped(1, limit))
     setLoading(false)
   }
 
   const loadMore = async () => {
     setLoadingMore(true)
-    const data = await cacheFetch(`${API_URL}/doodleFloor?page=${page + 1}&limit=${limit}`)
-    dispatch({
-      type: 'appendUndoopedDoodles',
-      payload: data,
-    })
+    await dispatch(fetchUndooped(page + 1, limit))
     setPage(page + 1)
-    if (data.length === 0) {
+    if (undoopedDoodles.length === 0) {
       await loadMore()
     }
     setLoadingMore(false)
   }
 
-  const fetchUndoopedDooplicators = async (type) => {
-    setLoadingMore(true)
+  const getDoops = async (type) => {
+    setLoading(true)
     dispatch({
       type: 'setUndoopedDooplicators',
       payload: [],
@@ -102,23 +94,18 @@ export default function Unused() {
     } else if (type === undoopedTypes.RARE) {
       index = 2
     }
-    const data = await cacheFetch(`${API_URL}/doopFloor?rarity=${index}`)
-
-    dispatch({
-      type: 'setUndoopedDooplicators',
-      payload: data,
-    })
-    setLoadingMore(false)
+    await dispatch(fetchUndoopedDooplicators(index))
+    setLoading(false)
   }
 
   const loadUndooped = (type) => {
     setMenuTitle(titles[type])
     if (type !== undoopedTypes.DOODLES) {
-      fetchUndoopedDooplicators(type)
+      getDoops(type)
       setTabIndex(1)
     } else {
       setPage(1)
-      fetchUndooped()
+      getDoodles()
       setTabIndex(0)
     }
   }
@@ -145,6 +132,7 @@ export default function Unused() {
       type: 'setActiveMarketTab',
       payload: marketTabs.UNDOOPED,
     })
+    dispatch(fetchCurrencies())
     loadUndooped()
     function loadUndooped() {
       const searchParams = new URL(document.location).searchParams

@@ -3,6 +3,9 @@ import { Transaction } from '@/interfaces/Etherscan'
 import { DOOPLICATOR_ADDRESS, DOOPMARKET_ADDRESS, doopContracts } from './constants'
 import { DecodedInfo, DoopTransactionInfo } from '../interfaces/DoopTransactions'
 export default function formatTransactionResponse(transactions: Transaction[]): DoopTransactionInfo[] {
+  Decoder.addABI(doopContracts[DOOPMARKET_ADDRESS])
+  Decoder.addABI(doopContracts[DOOPLICATOR_ADDRESS])
+
   return transactions
     .filter((transaction: Transaction) => {
       return (
@@ -12,7 +15,6 @@ export default function formatTransactionResponse(transactions: Transaction[]): 
       )
     })
     .map((transaction) => {
-      Decoder.addABI(doopContracts[transaction.to])
       const decodedData = Decoder.decodeData(transaction.input)
       const info = [...decodedData.params].reduce((acc, param): DecodedInfo => {
         const names = ['tokenId', 'dooplicatorId', 'addressOnTheOtherSide']

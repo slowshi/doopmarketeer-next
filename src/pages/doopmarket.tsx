@@ -1,26 +1,20 @@
 import { Box, Stack, Text, Center, Heading, Container, Button, HStack, IconButton, useBoolean } from '@chakra-ui/react'
 import { useState, useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
-import cacheFetch from '@/utils/cacheFetch'
 import { FaSortAmountDownAlt, FaSortAmountUp } from 'react-icons/fa'
 import DoodleCard from '@/components/DoodleCard'
 import ScrollToTop from '@/components/ScrollToTop'
-import { API_URL, marketTabs, palette } from '@/utils/constants'
+import { marketTabs, palette } from '@/utils/constants'
 import Nav from '@/components/Nav'
 import DoodleSpinner from '@/components/DoodleSpinner'
+import { fetchCurrencies, fetchDoopmarket } from '@/redux/actions'
 export default function DoopMarket() {
   const dispatch = useDispatch()
   const [loading, setLoading] = useState(false)
   const [page, setPage] = useState(1)
   const [sortKey] = useState('value')
   const [sortDesc, setSortDesc] = useBoolean()
-  const latestBlockNumber = useSelector((state) => {
-    let blockNumber = 0
-    if (state.app.feed.length > 0) {
-      blockNumber = state.app.feed[0].blockNumber
-    }
-    return blockNumber
-  })
+
   const totalDoopMarket = useSelector((state) => state.app.doopMarket.length)
   const doopMarket = useSelector((state) =>
     state.app.doopMarket
@@ -44,48 +38,33 @@ export default function DoopMarket() {
       })
       .slice(0, page * 5),
   )
-  const fetchDoopmarket = async () => {
-    setLoading(true)
-    await setPage(1)
-    const data = await cacheFetch(`${API_URL}/doopmarket`)
-    dispatch({
-      type: 'setDoopMarket',
-      payload: data,
-    })
-    setLoading(false)
-  }
-
-  const checkFeed = async () => {
-    if (latestBlockNumber === 0) return
-    const data = await cacheFetch(`${API_URL}/feed?startBlock=${latestBlockNumber}`, true)
-    dispatch({
-      type: 'prependFeed',
-      payload: data,
-    })
-  }
 
   const loadMore = async () => {
     setPage(page + 1)
   }
 
   useEffect(() => {
-    document.title = 'Doopmarketeer | Market'
-    dispatch({
-      type: 'setActiveMarketTab',
-      payload: marketTabs.DOOPMARKET,
-    })
-    fetchDoopmarket()
-    return () => {
+    ;(async () => {
+      document.title = 'Doopmarketeer | Market'
       dispatch({
-        type: 'setDoopMarket',
-        payload: [],
+        type: 'setActiveMarketTab',
+        payload: marketTabs.DOOPMARKET,
       })
-    }
-  }, [])
-  useEffect(() => {
-    const feedInterval = setInterval(checkFeed, 20000)
-    return () => clearInterval(feedInterval)
-  }, [latestBlockNumber])
+      dispatch(fetchCurrencies())
+      setLoading(true)
+      setPage(1)
+      await dispatch(fetchDoopmarket())
+      setLoading(false)
+
+      return () => {
+        dispatch({
+          type: 'setDoopMarket',
+          payload: [],
+        })
+      }
+    })()
+  }, [dispatch])
+
   return (
     <>
       <ScrollToTop />
