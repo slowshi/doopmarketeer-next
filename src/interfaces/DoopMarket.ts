@@ -9,4 +9,4 @@ interface DoopmarketListing {
 }
 type Listing = [string, [string, string, string], boolean]
 
-export { DoopmarketListing, Listing }
+export type { DoopmarketListing, Listing }

@@ -1,36 +1,35 @@
 import { Box, Stack, Text, Center, Heading, Container, Button, HStack, IconButton, useBoolean } from '@chakra-ui/react'
 import { useState, useEffect } from 'react'
-import { useSelector, useDispatch } from 'react-redux'
 import { FaSortAmountDownAlt, FaSortAmountUp } from 'react-icons/fa'
 import DoodleCard from '@/components/DoodleCard'
 import ScrollToTop from '@/components/ScrollToTop'
 import { marketTabs, palette } from '@/utils/constants'
 import Nav from '@/components/Nav'
 import DoodleSpinner from '@/components/DoodleSpinner'
-import { fetchCurrencies, fetchDoopmarket } from '@/redux/actions'
+import { useAppDispatch, useAppSelector } from '@/redux/hooks'
+import { useGetDoopmarketQuery } from '@/services/api'
+import { selectTotalDoopmarket, setActiveMarketTab } from '@/redux/appSlice'
 export default function DoopMarket() {
-  const dispatch = useDispatch()
-  const [loading, setLoading] = useState(false)
+  const dispatch = useAppDispatch()
   const [page, setPage] = useState(1)
-  const [sortKey] = useState('value')
   const [sortDesc, setSortDesc] = useBoolean()
-
-  const totalDoopMarket = useSelector((state) => state.app.doopMarket.length)
-  const doopMarket = useSelector((state) =>
-    state.app.doopMarket
+  const totalDoopmarket = useAppSelector(selectTotalDoopmarket)
+  const { isLoading } = useGetDoopmarketQuery()
+  const doopMarket = useAppSelector((state) =>
+    [...state.app.doopMarket]
       .sort((a, b) => {
         if (sortDesc) {
-          if (a[sortKey] > b[sortKey]) {
+          if (a.value > b.value) {
             return -1
           }
-          if (a[sortKey] < b[sortKey]) {
+          if (a.value < b.value) {
             return 1
           }
         } else {
-          if (a[sortKey] < b[sortKey]) {
+          if (a.value < b.value) {
             return -1
           }
-          if (a[sortKey] > b[sortKey]) {
+          if (a.value > b.value) {
             return 1
           }
         }
@@ -44,25 +43,8 @@ export default function DoopMarket() {
   }
 
   useEffect(() => {
-    ;(async () => {
-      document.title = 'Doopmarketeer | Market'
-      dispatch({
-        type: 'setActiveMarketTab',
-        payload: marketTabs.DOOPMARKET,
-      })
-      dispatch(fetchCurrencies())
-      setLoading(true)
-      setPage(1)
-      await dispatch(fetchDoopmarket())
-      setLoading(false)
-
-      return () => {
-        dispatch({
-          type: 'setDoopMarket',
-          payload: [],
-        })
-      }
-    })()
+    document.title = 'Doopmarketeer | Market'
+    dispatch(setActiveMarketTab(marketTabs.DOOPMARKET))
   }, [dispatch])
 
   return (
@@ -87,14 +69,14 @@ export default function DoopMarket() {
       </Box>
       <Container maxW="container.lg">
         <Stack w="full" paddingBottom="8">
-          {loading === true ? (
+          {isLoading === true ? (
             <DoodleSpinner />
           ) : (
             <Stack w="full" spacing="4">
               {doopMarket.map((doop) => (
                 <DoodleCard key={doop.tokenId} doop={doop}></DoodleCard>
               ))}
-              {doopMarket.length < totalDoopMarket ? (
+              {doopMarket.length < totalDoopmarket ? (
                 <Center>
                   <Button colorScheme="whiteAlpha" onClick={loadMore}>
                     Load More

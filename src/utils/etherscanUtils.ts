@@ -5,18 +5,16 @@ import fetchGetWithRetry from './fetchGetWithRetry'
 
 const userTransactions = async (address: string, page = 1): Promise<TransactionResponse> => {
   const blockNumber = await getBlockNumber()
-  const params = {
+  const url = `https://api.etherscan.io/api?${new URLSearchParams({
     module: 'account',
     action: 'txlist',
-    address,
-    startblock: DOOPLICATION_BLOCK,
-    endblock: blockNumber,
-    page,
-    offset: 100,
-    apikey: process.env.ETHERSCAN_API_KEY,
-  }
-  const paramsObject = Object.fromEntries(Array.from(Object.entries(params)))
-  const url = `https://api.etherscan.io/api?${new URLSearchParams(paramsObject)}`
+    address: address,
+    startblock: DOOPLICATION_BLOCK.toString(),
+    endblock: blockNumber.toString(),
+    page: page.toString(),
+    offset: '100',
+    apikey: process.env.ETHERSCAN_API_KEY || '',
+  })}`
   const res = await fetchGetWithRetry(url)
 
   return res as TransactionResponse
@@ -29,18 +27,16 @@ const contractTransactions = async (
   startBlock = DOOPLICATION_BLOCK,
 ): Promise<TransactionResponse> => {
   const blockNumber = await getBlockNumber()
-  const params = {
+  const url = `https://api.etherscan.io/api?${new URLSearchParams({
     module: 'account',
     action: 'txlist',
-    address,
-    startblock: startBlock,
-    endblock: blockNumber,
-    page,
-    offset,
-    apikey: process.env.ETHERSCAN_API_KEY,
-  }
-  const paramsObject = Object.fromEntries(Array.from(Object.entries(params)))
-  const url = `https://api.etherscan.io/api?${new URLSearchParams(paramsObject)}`
+    address: address,
+    startblock: startBlock.toString(),
+    endblock: blockNumber.toString(),
+    page: page.toString(),
+    offset: offset.toString(),
+    apikey: process.env.ETHERSCAN_API_KEY || '',
+  })}`
   const res = await fetchGetWithRetry(url)
 
   return res as TransactionResponse

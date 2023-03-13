@@ -16,14 +16,14 @@ import {
 } from '@chakra-ui/react'
 import { useEffect } from 'react'
 import WearbleImage from './WearableImage'
-import { useSelector, useDispatch, shallowEqual } from 'react-redux'
+import { useSelector, shallowEqual } from 'react-redux'
 import { currencyMap, IPFS_GATEWAY, palette } from '@/utils/constants'
-import { fetchDoodleCardAssets } from '@/redux/actions'
 import NextLink from 'next/link'
+import { doopmarketeerApi, useGetDoodleAssetsQuery } from '@/services/api'
 
 function DoodleCard({ doop }) {
-  const dispatch = useDispatch()
   const [avatarLoaded, setAvatarLoaded] = useBoolean()
+  useGetDoodleAssetsQuery(doop.tokenId)
 
   const image = useSelector((state) => {
     const data = state.app.assets[doop.tokenId]
@@ -98,12 +98,13 @@ function DoodleCard({ doop }) {
   }
 
   useEffect(() => {
-    // fetchAssets()
-    dispatch(fetchDoodleCardAssets(doop.tokenId, doop.dooplicatorId))
+    if (doop.dooplicatorId !== '' && typeof doop.dooplicatorId !== 'undefined') {
+      doopmarketeerApi.endpoints.getDooplicatiorAssets.initiate(doop.dooplicatorId)
+    }
     return () => {
       setAvatarLoaded.off()
     }
-  }, [doop.tokenId, doop.dooplicatorId, dispatch, setAvatarLoaded])
+  }, [doop.dooplicatorId, setAvatarLoaded])
 
   return (
     <Card>

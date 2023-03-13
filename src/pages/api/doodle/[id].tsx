@@ -12,10 +12,13 @@ import {
   Wearable,
   DooplicatorWearables,
   AssumedWearableInfo,
+  Doodle,
+  WearableCost,
 } from '@/interfaces/Doodle'
 import fetchGetWithRetry from '@/utils/fetchGetWithRetry'
+import { SearchMarketplaceNFTsResponse } from '@/interfaces/OnGaia'
 
-export default async function userHandler(req: NextApiRequest, res: NextApiResponse<User>) {
+export default async function userHandler(req: NextApiRequest, res: NextApiResponse<Doodle | { error: string }>) {
   const { query } = req
   const tokenId = (query.id as string) || ''
 
@@ -65,7 +68,7 @@ export default async function userHandler(req: NextApiRequest, res: NextApiRespo
       }
     }
   `
-  const costPromises = wearables
+  const costPromises: Promise<SearchMarketplaceNFTsResponse>[] = wearables
     .filter((item) => typeof item.wearable_id !== 'undefined')
     .map((item) => {
       const collectionId = item.wearable_id !== '244' ? 'doodleswearables' : 'doodlesbetapass'
@@ -80,8 +83,12 @@ export default async function userHandler(req: NextApiRequest, res: NextApiRespo
       }
       return request('https://api-v2.ongaia.com/graphql/', gq, variables)
     })
-  const costs = await Promise.all(costPromises)
-  const costResponse = costs.map((cost) => cost['searchMarketplaceNFTsV2']['marketplaceNFTs'][0])
+  const costs: SearchMarketplaceNFTsResponse[] = await Promise.all(costPromises)
+
+  // console.log(costs)
+  const costResponse: WearableCost[] = costs.map(
+    (cost: SearchMarketplaceNFTsResponse) => cost.searchMarketplaceNFTsV2.marketplaceNFTs[0] as WearableCost,
+  )
 
   res.status(200).json({
     ...doodleResponse,

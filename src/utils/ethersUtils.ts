@@ -20,7 +20,6 @@ const getContrat = (contract: string, abi: ethers.InterfaceAbi) => {
 
 const getCurrencyConversion = async (currencyKey = 'usd') => {
   if (currencyKey === 'usd') return 1
-
   if (
     cacheServiceInstance.has(currencyKey) &&
     !cacheServiceInstance.isExpired(currencyKey, 300) &&
@@ -29,7 +28,7 @@ const getCurrencyConversion = async (currencyKey = 'usd') => {
     return cacheServiceInstance.get(currencyKey)
   }
   const currencyAddress = currencyMap[currencyKey].address
-  const currencyContract = getContrat(currencyAddress, CurrencyAbi, ETHEREUM_RPC_URL)
+  const currencyContract = getContrat(currencyAddress, CurrencyAbi)
   let latestAnswer = await currencyContract.latestAnswer()
   latestAnswer = Number(formatUnits(latestAnswer, 8))
   cacheServiceInstance.set(currencyKey, latestAnswer)

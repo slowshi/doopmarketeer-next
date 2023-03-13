@@ -14,14 +14,23 @@ import {
   Link,
 } from '@chakra-ui/react'
 import { useState, useEffect } from 'react'
-import cacheFetch from '@/utils/cacheFetch'
-import { useSelector, useDispatch, shallowEqual } from 'react-redux'
-import { currencyMap, DOOPLICATOR_URL, IPFS_GATEWAY, palette } from '@/utils/constants'
+import { useSelector, shallowEqual } from 'react-redux'
+import { currencyMap, IPFS_GATEWAY, palette } from '@/utils/constants'
+import { useAppDispatch, useAppSelector } from '@/redux/hooks'
+import { selectSearchLoading, setSearchLoading } from '@/redux/appSlice'
+import { useGetDooplicatiorAssetsQuery } from '@/services/api'
 
-function DooplicatorCard({ tokenId, price, url }) {
-  const dispatch = useDispatch()
-  const loading = useSelector((state) => state.app.searchLoading)
+interface Props {
+  tokenId?: string
+  price?: number
+  url?: string
+}
+
+function DooplicatorCard({ tokenId = '', price, url }: Props) {
+  const dispatch = useAppDispatch()
+  const loading = useAppSelector(selectSearchLoading)
   const [avatarLoaded, setAvatarLoaded] = useState(false)
+  useGetDooplicatiorAssetsQuery(tokenId)
   const image = useSelector((state) => {
     const data = state.app.dooplicatorAssets[tokenId]
     if (typeof data === 'undefined') return ''
@@ -43,25 +52,9 @@ function DooplicatorCard({ tokenId, price, url }) {
     setAvatarLoaded(true)
   }
 
-  async function fetchAssets() {
-    setAvatarLoaded(false)
-    const data = await cacheFetch(`${DOOPLICATOR_URL}/${tokenId}`, true)
-    dispatch({
-      type: 'addDooplicatorAssets',
-      payload: {
-        tokenId,
-        data,
-      },
-    })
-    dispatch({
-      type: 'setSearchLoading',
-      payload: false,
-    })
-  }
-
   useEffect(() => {
-    fetchAssets()
-  }, [tokenId, loading])
+    dispatch(setSearchLoading(false))
+  }, [tokenId, loading, dispatch])
 
   return (
     <Card>
@@ -121,8 +114,5 @@ function DooplicatorCard({ tokenId, price, url }) {
     </Card>
   )
 }
-DooplicatorCard.defaultProps = {
-  tokenId: '',
-  url: '',
-}
+
 export default DooplicatorCard

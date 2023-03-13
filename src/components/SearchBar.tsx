@@ -14,8 +14,8 @@ import {
 import { useState, useEffect } from 'react'
 import { FaSearch, FaChevronDown } from 'react-icons/fa'
 import { searchTypes, searchColors } from '@/utils/constants'
-
-function SearchBar({ value, type, onSubmit }) {
+import { SearchBarParams, SearchBarResponse } from '@/interfaces/SearchBar'
+function SearchBar({ value, type, onSubmit }: SearchBarParams) {
   const [input, setInput] = useState('')
   const [searchType, setSearchType] = useState(searchTypes.ADDRESS)
   useEffect(() => {
@@ -27,7 +27,12 @@ function SearchBar({ value, type, onSubmit }) {
     e.preventDefault()
     e.stopPropagation()
     if (input === '') return
-    onSubmit({ value: input, type: searchType })
+    const response: SearchBarResponse = {
+      value: input,
+      type: searchType,
+    }
+    console.log(response)
+    onSubmit(type, value)
   }
   const handleInputChange = (e) => {
     setInput(e.target.value)

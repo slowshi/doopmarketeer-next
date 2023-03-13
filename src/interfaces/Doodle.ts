@@ -18,10 +18,20 @@ interface Wearable {
   position?: string
   plurality?: boolean
   ipfs_hash_svg?: string
+  cost?: string
   image_uri: string
 }
 interface DooplicatorWearables {
   wearables: Wearable[]
+}
+interface WearableCost {
+  editionID: string
+  name: string
+  description: string
+  activeListing: {
+    vaultType: string
+    price: number
+  }
 }
 interface Doodle {
   image: string
@@ -32,15 +42,7 @@ interface Doodle {
     value: string
   }[]
   wearables: Wearable[]
-  costs: {
-    editionID: string
-    name: string
-    description: string
-    activeListing: {
-      vaultType: string
-      price: number
-    }
-  }[]
+  costs: WearableCost[]
 }
 type AssumedWearableInfo = {
   wearable_id: string
@@ -49,10 +51,11 @@ type AssumedWearableInfo = {
 type AssumedWearablesMap = {
   [key: string]: AssumedWearableInfo[]
 }
-export {
+export type {
   DoodleAttribute,
   DoodleMetadata,
   Wearable,
+  WearableCost,
   DooplicatorWearables,
   Doodle,
   AssumedWearableInfo,

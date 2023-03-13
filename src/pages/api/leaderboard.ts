@@ -3,14 +3,14 @@ import type { NextApiRequest, NextApiResponse } from 'next'
 import { DOOPLICATOR_ADDRESS, DOOPMARKET_ADDRESS } from '@/utils/constants'
 import { contractTransactions } from '@/utils/etherscanUtils'
 import { Transaction } from '@/interfaces/Etherscan'
-import { LeaderboardUser } from '@/interfaces/DoopTransactions'
+import { LeaderboardMap, LeaderboardUser } from '@/interfaces/DoopTransactions'
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse<Data>) {
+export default async function handler(req: NextApiRequest, res: NextApiResponse<LeaderboardUser[]>) {
   const doopResponse = await contractTransactions(DOOPLICATOR_ADDRESS)
   const marketResponse = await contractTransactions(DOOPMARKET_ADDRESS)
   const doopResults: Transaction[] = doopResponse.result
   const marketResults: Transaction[] = marketResponse.result
-  const transactions: LeaderboardUser[] = [...doopResults, ...marketResults]
+  const transactions: LeaderboardMap = [...doopResults, ...marketResults]
     .filter((transaction: Transaction) => {
       return (
         [DOOPMARKET_ADDRESS, DOOPLICATOR_ADDRESS].indexOf(transaction.to) > -1 &&

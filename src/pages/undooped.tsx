@@ -16,7 +16,6 @@ import {
   MenuItem,
 } from '@chakra-ui/react'
 import { useState, useEffect } from 'react'
-import { useSelector, useDispatch } from 'react-redux'
 import DoodleCard from '@/components/DoodleCard'
 import ScrollToTop from '@/components/ScrollToTop'
 import { marketTabs, palette, undoopedTypes } from '@/utils/constants'
@@ -24,8 +23,9 @@ import Nav from '@/components/Nav'
 import DoodleSpinner from '@/components/DoodleSpinner'
 import DooplicatorCard from '@/components/DooplicatorCard'
 import { useRouter } from 'next/router'
-import { fetchCurrencies, fetchUndooped, fetchUndoopedDooplicators } from '@/redux/actions'
-
+import { resetUndoopedDoodles, resetUndoopedDooplicators, setActiveMarketTab } from '@/redux/appSlice'
+import { useAppDispatch, useAppSelector } from '@/redux/hooks'
+import { doopmarketeerApi } from '@/services/api'
 export default function Unused() {
   const titles = {
     [undoopedTypes.DOODLES]: 'Doodles',
@@ -34,14 +34,14 @@ export default function Unused() {
     [undoopedTypes.RARE]: 'Rare',
   }
   const limit = 20
-  const dispatch = useDispatch()
+  const dispatch = useAppDispatch()
   const router = useRouter()
   const [loading, setLoading] = useState(false)
   const [loadingMore, setLoadingMore] = useState(false)
   const [page, setPage] = useState(1)
   const [menuTitle, setMenuTitle] = useState('Doodles')
   const [tabIndex, setTabIndex] = useState(0)
-  const undoopedDoodles = useSelector((state) =>
+  const undoopedDoodles = useAppSelector((state) =>
     state.app.undoopedDoodles.map((item) => {
       return {
         ...item,
@@ -51,7 +51,7 @@ export default function Unused() {
       }
     }),
   )
-  const undoopedDooplicators = useSelector((state) =>
+  const undoopedDooplicators = useAppSelector((state) =>
     state.app.undoopedDooplicators.map((item) => {
       return {
         tokenId: item.id,
@@ -64,17 +64,14 @@ export default function Unused() {
   const getDoodles = async () => {
     setPage(1)
     setLoading(true)
-    dispatch({
-      type: 'setUndoopedDoodles',
-      payload: [],
-    })
-    await dispatch(fetchUndooped(1, limit))
+    dispatch(resetUndoopedDoodles)
+    await dispatch(doopmarketeerApi.endpoints.getUndoopedDoodles.initiate({ page: 1, limit }))
     setLoading(false)
   }
 
   const loadMore = async () => {
     setLoadingMore(true)
-    await dispatch(fetchUndooped(page + 1, limit))
+    await dispatch(doopmarketeerApi.endpoints.getUndoopedDoodles.initiate({ page: page + 1, limit }))
     setPage(page + 1)
     if (undoopedDoodles.length === 0) {
       await loadMore()
@@ -82,23 +79,20 @@ export default function Unused() {
     setLoadingMore(false)
   }
 
-  const getDoops = async (type) => {
+  const getDoops = async (type: string) => {
     setLoading(true)
-    dispatch({
-      type: 'setUndoopedDooplicators',
-      payload: [],
-    })
+    dispatch(resetUndoopedDooplicators)
     let index = 0
     if (type === undoopedTypes.COMMON) {
       index = 1
     } else if (type === undoopedTypes.RARE) {
       index = 2
     }
-    await dispatch(fetchUndoopedDooplicators(index))
+    await dispatch(doopmarketeerApi.endpoints.getUndoopedDooplicators.initiate(index))
     setLoading(false)
   }
 
-  const loadUndooped = (type) => {
+  const loadUndooped = (type: string) => {
     setMenuTitle(titles[type])
     if (type !== undoopedTypes.DOODLES) {
       getDoops(type)
@@ -110,7 +104,7 @@ export default function Unused() {
     }
   }
 
-  const handleMenuSelect = (type) => {
+  const handleMenuSelect = (type: string) => {
     let searchParams = ''
     if (type !== undoopedTypes.DOODLES) {
       searchParams = `?${new URLSearchParams({
@@ -122,28 +116,22 @@ export default function Unused() {
     loadUndooped(type)
   }
 
-  const handleTabsChange = (index) => {
+  const handleTabsChange = (index: number) => {
     setTabIndex(index)
   }
 
   useEffect(() => {
     document.title = 'Doopmarketeer | Undooped'
-    dispatch({
-      type: 'setActiveMarketTab',
-      payload: marketTabs.UNDOOPED,
-    })
-    dispatch(fetchCurrencies())
-    loadUndooped()
-    function loadUndooped() {
-      const searchParams = new URL(document.location).searchParams
-      if (searchParams.has('type')) {
-        const type = searchParams.get('type')
-        handleMenuSelect(type)
-      } else {
-        handleMenuSelect(undoopedTypes.DOODLES)
-      }
+    dispatch(setActiveMarketTab(marketTabs.UNDOOPED))
+    const searchParams = new URL(document.location.toString()).searchParams
+    if (searchParams.has('type')) {
+      const type = searchParams.get('type') || ''
+      handleMenuSelect(type)
+    } else {
+      handleMenuSelect(undoopedTypes.DOODLES)
     }
-  }, [])
+  }, [dispatch])
+
   return (
     <>
       <ScrollToTop />
@@ -190,8 +178,8 @@ export default function Unused() {
                     ''
                   )}
                   <Stack w="full" spacing="4" paddingBottom="8">
-                    {undoopedDoodles.map((doop) => (
-                      <DoodleCard key={doop.tokenId} doop={doop}></DoodleCard>
+                    {undoopedDoodles.map((dood) => (
+                      <DoodleCard key={dood.tokenId} doop={dood}></DoodleCard>
                     ))}
                     <Center>
                       <Button isLoading={loadingMore} colorScheme="whiteAlpha" onClick={loadMore}>

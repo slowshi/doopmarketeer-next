@@ -5,7 +5,7 @@ import { Wearable, DooplicatorWearables } from '@/interfaces/Doodle'
 import { DOOPLICATOR_WEARABLES_URL } from '@/utils/constants'
 import fetchGetWithRetry from '@/utils/fetchGetWithRetry'
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse<Data>) {
+export default async function handler(req: NextApiRequest, res: NextApiResponse<UndoopedDoodle[]>) {
   const limit: number = Number(req.query['limit']) || 20
   let page: number = Number(req.query['page']) || 1
   if (page < 1) {

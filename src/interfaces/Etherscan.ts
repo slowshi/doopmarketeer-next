@@ -38,4 +38,4 @@ interface UserTransactionParams {
   apikey: string | undefined
 }
 
-export { TransactionResponse, Transaction, UserTransactionParams }
+export type { TransactionResponse, Transaction, UserTransactionParams }

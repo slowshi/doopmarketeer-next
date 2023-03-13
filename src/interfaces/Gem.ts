@@ -24,4 +24,4 @@ interface BodyFilter {
   slug: string
   traits?: { [key: string]: string[] }
 }
-export { GemResponse, BodyFilter }
+export type { GemResponse, BodyFilter }

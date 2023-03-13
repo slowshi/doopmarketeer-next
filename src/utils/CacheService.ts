@@ -1,4 +1,4 @@
-import { CacheItem, CacheValue } from '../interface/CacheService'
+import { CacheItem, CacheValue } from '@/interfaces/CacheService'
 
 class CacheService {
   private cache = new Map<string, CacheItem>()

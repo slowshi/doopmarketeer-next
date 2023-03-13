@@ -1,5 +1,6 @@
 import { AbiItem } from 'web3-utils'
 import { AssumedWearablesMap } from '../interfaces/Doodle'
+import { CurrencyMap } from '@/interfaces/CurrencyMap'
 const dooplicateItem: AbiItem[] = [
   {
     inputs: [
@@ -265,7 +266,7 @@ const doopContracts: DoopContracts = {
 const API_URL = 'api'
 const IPFS_GATEWAY = 'https://ipfs.io/ipfs'
 const DOOPLICATOR_URL = 'https://metadata.artlab.xyz/0185fa75-ba04-8156-9fbe-bb39dc263392'
-const currencyMap = {
+const currencyMap: CurrencyMap = {
   usd: {
     label: 'USD',
     address: '',
@@ -296,14 +297,15 @@ const currencyMap = {
   },
 }
 
-const marketTabs = {
+const marketTabs: { [key: string]: string } = {
   LEADERBOARD: 'leaderboard',
   FEED: 'feed',
   DOOPMARKET: 'doopmarket',
   SEARCH: 'search',
   UNDOOPED: 'undooped',
 }
-const palette = {
+
+const palette: { [key: string]: string } = {
   PINK_100: '#FFD2EA',
   PINK_200: '#FFC2DF',
   PINK_300: '#FFA4D4',
@@ -326,21 +328,28 @@ const palette = {
   SKIN_800: '#D18C79',
 }
 
-const searchTypes = {
+const searchTypes: { [key: string]: string } = {
   ADDRESS: 'address',
   DOOPLICATOR: 'dooplicator',
   DOODLE: 'doodle',
   GENESIS_BOX: 'genesisBox',
 }
 
-const undoopedTypes = {
+const undoopedTypes: { [key: string]: string } = {
   DOODLES: 'doodles',
   VERY_COMMON: 'veryCommon',
   COMMON: 'common',
   RARE: 'rare',
 }
 
-const searchColors = {
+interface SearchColors {
+  [key: string]: {
+    light: string
+    dark: string
+  }
+}
+
+const searchColors: SearchColors = {
   [searchTypes.ADDRESS]: {
     light: palette.PURPLE_100,
     dark: palette.PURPLE_200,

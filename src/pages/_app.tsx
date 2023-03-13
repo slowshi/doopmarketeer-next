@@ -3,8 +3,9 @@ import '@/styles/globals.css'
 import { ChakraProvider } from '@chakra-ui/react'
 import { Provider } from 'react-redux'
 import { extendTheme } from '@chakra-ui/react'
-import { useStore } from '@/redux/store'
-
+// import { useStore } from '@/redux/store'
+import { store } from '@/redux/appStore'
+import { getCurrencies } from '@/redux/appSlice'
 const theme = extendTheme({
   fonts: {
     body: 'Chalkboard SE, sans-serif',
@@ -13,8 +14,7 @@ const theme = extendTheme({
 })
 
 export default function App({ Component, pageProps }: AppProps) {
-  const store = useStore(pageProps.initialReduxState)
-
+  store.dispatch(getCurrencies())
   return (
     <Provider store={store}>
       <ChakraProvider theme={theme}>

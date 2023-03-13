@@ -1,8 +1,8 @@
 import { Image, Skeleton, Text, Box, Badge } from '@chakra-ui/react'
 import { useState } from 'react'
 import { palette } from '@/utils/constants'
-
-function WearbleImage({ item, rarity }) {
+import { Wearable } from '@/interfaces/Doodle'
+function WearbleImage({ item, rarity }: { item: Wearable; rarity: string }) {
   const [loaded, setLoaded] = useState(false)
 
   return (
@@ -14,7 +14,7 @@ function WearbleImage({ item, rarity }) {
             w="90px"
             rounded="xl"
             src={item?.image_uri}
-            onLoad={setLoaded}
+            onLoad={() => setLoaded(true)}
             alt="wearable"
           ></Image>
           {rarity !== null ? (

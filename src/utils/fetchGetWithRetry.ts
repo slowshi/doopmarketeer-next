@@ -1,4 +1,3 @@
-import fetch from 'node-fetch'
 type FetchParams = number | string | null | undefined | unknown
 
 export default async function fetchGetWithRetry(

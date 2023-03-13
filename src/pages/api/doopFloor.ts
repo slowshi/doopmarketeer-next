@@ -1,7 +1,8 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import getGemAssets from '@/utils/getGemAssets'
+import { GemResponse } from '@/interfaces/Gem'
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse<Data>) {
+export default async function handler(req: NextApiRequest, res: NextApiResponse<GemResponse[]>) {
   let rarity: number = Number(req.query['rarity']) || 0
 
   if (rarity < 0) {

@@ -31,8 +31,10 @@ interface LeaderboardUser {
   dooplicate: number
   dooplicateItem: number
   value: number
+  totalDoops?: number
+  shortAddress?: string
 }
 type LeaderboardMap = {
   [key: string]: LeaderboardUser
 }
-export { DecodedInfo, DoopTransactionInfo, DoopResponse, LeaderboardUser, LeaderboardMap }
+export type { DecodedInfo, DoopTransactionInfo, DoopResponse, LeaderboardUser, LeaderboardMap }

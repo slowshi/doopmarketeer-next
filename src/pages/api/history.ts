@@ -6,7 +6,7 @@ import { Transaction } from '../../interfaces/Etherscan'
 import { DoopTransactionInfo } from '../../interfaces/DoopTransactions'
 import formatTransactionResponse from '../../utils/formatTransactionResponse'
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse<Data>) {
+export default async function handler(req: NextApiRequest, res: NextApiResponse<DoopTransactionInfo[]>) {
   const { query } = req
   const limit: number = Number(query['limit']) || 5
   let page: number = Number(query['page']) || 1

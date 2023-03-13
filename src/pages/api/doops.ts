@@ -1,7 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 
 import { Transaction } from '../../interfaces/Etherscan'
-import { DoopTransactionInfo } from '../../interfaces/DoopTransactions'
+import { DoopResponse, DoopTransactionInfo } from '../../interfaces/DoopTransactions'
 import formatTransactionResponse from '../../utils/formatTransactionResponse'
 import { resolveENS } from '../../utils/ethersUtils'
 import { userTransactions } from '../../utils/etherscanUtils'
@@ -20,7 +20,10 @@ const getDoops = async (address: string): Promise<DoopResponse> => {
 
   return { transactions }
 }
-export default async function handler(req: NextApiRequest, res: NextApiResponse<Data>) {
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse<DoopTransactionInfo[] | { error: string }>,
+) {
   const { query } = req
   const address: string = query['address']?.toString() || ''
   if (address === '') {

@@ -13,86 +13,35 @@ import {
   StatNumber,
   useBreakpointValue,
 } from '@chakra-ui/react'
-import { useState, useEffect } from 'react'
-import { useSelector, useDispatch, shallowEqual } from 'react-redux'
-import cacheFetch from '@/utils/cacheFetch'
-import { API_URL, marketTabs, palette } from '@/utils/constants'
+import { useEffect } from 'react'
+import { marketTabs, palette } from '@/utils/constants'
 import ScrollToTop from '@/components/ScrollToTop'
 import Nav from '@/components/Nav'
 import DoodleSpinner from '@/components/DoodleSpinner'
 import NextLink from 'next/link'
-import { fetchCurrencies, fetchLeaderboard } from '@/redux/actions'
+import {
+  selectLeaderboard,
+  selectLeaderboardLength,
+  selectLeaderboardTotals,
+  setActiveMarketTab,
+  setSortLeaderboard,
+} from '@/redux/appSlice'
+import { useAppDispatch, useAppSelector } from '@/redux/hooks'
+import { useGetLeaderboardQuery } from '@/services/api'
+import { LeaderboardUser } from '@/interfaces/DoopTransactions'
 
 export default function Leaderbaord() {
-  const dispatch = useDispatch()
-  const [loading, setLoading] = useState(true)
-  const totalDoopers = useSelector((state) => state.app.leaderboard.length)
-  const totalDoops = useSelector((state) =>
-    state.app.leaderboard.reduce((acc, user) => {
-      return acc + user.dooplicate + user.dooplicateItem
-    }, 0),
-  )
-  const totalDoopMarket = useSelector((state) =>
-    state.app.leaderboard.reduce((acc, user) => {
-      return acc + user.dooplicateItem
-    }, 0),
-  )
-  const totalDooplicators = useSelector((state) =>
-    state.app.leaderboard.reduce((acc, user) => {
-      return acc + user.dooplicate
-    }, 0),
-  )
-  const totalVolume = useSelector((state) =>
-    state.app.leaderboard.reduce((acc, user) => {
-      return acc + user.value
-    }, 0),
-  )
-  const leaderboardSelector = (state) => {
-    const leaderboardSort = state.app.leaderboardSort
-    const data = state.app.leaderboard
-      .map((user) => {
-        const shortAddress = user.address.substring(0, 4) + '...' + user.address.substring(user.address.length - 4)
-
-        return {
-          ...user,
-          totalDoops: user.dooplicate + user.dooplicateItem,
-          shortAddress,
-        }
-      })
-      .sort((a, b) => {
-        if (a[leaderboardSort] > b[leaderboardSort]) {
-          return -1
-        }
-        if (a[leaderboardSort] < b[leaderboardSort]) {
-          return 1
-        }
-        return 0
-      })
-
-    return data.slice(0, 20)
-  }
-  const leaderboard = useSelector(leaderboardSelector, shallowEqual)
-
-  const sortLeaderboard = (data) => {
-    dispatch({
-      type: 'sortLeaderboard',
-      payload: data,
-    })
-  }
+  const dispatch = useAppDispatch()
+  const { isLoading } = useGetLeaderboardQuery()
+  const totalDoopers = useAppSelector(selectLeaderboardLength)
+  const totals = useAppSelector(selectLeaderboardTotals)
+  const leaderboard = useAppSelector(selectLeaderboard)
 
   useEffect(() => {
-    ;(async () => {
-      document.title = 'Doopmarketeer | Leaderboard'
-      dispatch({
-        type: 'setActiveMarketTab',
-        payload: marketTabs.LEADERBOARD,
-      })
-      dispatch(fetchCurrencies())
-      setLoading(true)
-      await dispatch(fetchLeaderboard())
-      setLoading(false)
-    })()
+    document.title = 'Doopmarketeer | Leaderboard'
+    dispatch(setActiveMarketTab(marketTabs.LEADERBOARD))
   }, [dispatch])
+
   const fontSize = useBreakpointValue({ base: 'sm', sm: 'md' })
 
   return (
@@ -108,7 +57,7 @@ export default function Leaderbaord() {
       </Box>
       <Container maxW="container.lg">
         <Stack w="full" paddingBottom="8">
-          {loading === true ? (
+          {isLoading === true ? (
             <DoodleSpinner />
           ) : (
             <Stack w="full">
@@ -121,19 +70,19 @@ export default function Leaderbaord() {
                     </Stat>
                     <Stat>
                       <StatLabel>Total Doops</StatLabel>
-                      <StatNumber>{totalDoops}</StatNumber>
+                      <StatNumber>{totals.all}</StatNumber>
                     </Stat>
                     <Stat>
                       <StatLabel>Dooplicator</StatLabel>
-                      <StatNumber>{totalDooplicators}</StatNumber>
+                      <StatNumber>{totals.dooplicator}</StatNumber>
                     </Stat>
                     <Stat>
                       <StatLabel>DoopMarket</StatLabel>
-                      <StatNumber>{totalDoopMarket}</StatNumber>
+                      <StatNumber>{totals.market}</StatNumber>
                     </Stat>
                     <Stat>
                       <StatLabel>Volume</StatLabel>
-                      <StatNumber>{`${Math.round((totalVolume / 10e17) * 100) / 100} Ξ`}</StatNumber>
+                      <StatNumber>{`${Math.round((totals.volume / 10e17) * 100) / 100} Ξ`}</StatNumber>
                     </Stat>
                   </SimpleGrid>
                 </CardBody>
@@ -150,7 +99,7 @@ export default function Leaderbaord() {
                         color={palette.ORANGE_100}
                         fontSize={fontSize}
                         flex="1"
-                        onClick={() => sortLeaderboard('dooplicate')}
+                        onClick={() => dispatch(setSortLeaderboard('dooplicate'))}
                       >
                         Doop
                       </Link>
@@ -159,7 +108,7 @@ export default function Leaderbaord() {
                         color={palette.ORANGE_100}
                         fontSize={fontSize}
                         flex="1"
-                        onClick={() => sortLeaderboard('dooplicateItem')}
+                        onClick={() => dispatch(setSortLeaderboard('dooplicateItem'))}
                       >
                         Market
                       </Link>
@@ -168,7 +117,7 @@ export default function Leaderbaord() {
                         color={palette.ORANGE_100}
                         fontSize={fontSize}
                         flex="1"
-                        onClick={() => sortLeaderboard('totalDoops')}
+                        onClick={() => dispatch(setSortLeaderboard('totalDoops'))}
                       >
                         Total
                       </Link>
@@ -177,12 +126,12 @@ export default function Leaderbaord() {
                         color={palette.ORANGE_100}
                         fontSize={fontSize}
                         flex="1"
-                        onClick={() => sortLeaderboard('value')}
+                        onClick={() => dispatch(setSortLeaderboard('value'))}
                       >
                         Volume
                       </Link>
                     </Box>
-                    {leaderboard.map((user) => (
+                    {leaderboard.map((user: LeaderboardUser) => (
                       <Box key={user.address} w="full" display="flex" justifyContent="space-between">
                         <Link
                           fontWeight="bold"

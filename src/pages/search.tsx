@@ -1,8 +1,7 @@
 import { Heading, Container, Stack, Box, Text } from '@chakra-ui/react'
-import { useState, useEffect } from 'react'
-import { useSelector, useDispatch } from 'react-redux'
+import { useEffect } from 'react'
+import { useSelector } from 'react-redux'
 import { useRouter } from 'next/router'
-
 import { marketTabs, palette, searchTypes } from '../utils/constants'
 import Dooplications from '../components/Dooplications'
 import ScrollToTop from '../components/ScrollToTop'
@@ -11,31 +10,33 @@ import SearchBar from '../components/SearchBar'
 import DoodleSpinner from '../components/DoodleSpinner'
 import SingleDoop from '../components/SingleDoop'
 import DooplicatorCard from '../components/DooplicatorCard'
-import { fetchCurrencies, loadSearchParams } from '@/redux/actions'
-export default function Search() {
-  const dispatch = useDispatch()
-  const router = useRouter()
-  const loading = useSelector((state) => state.app.searchLoading)
-  const searchValue = useSelector((state) => state.app.searchValue)
-  const searchType = useSelector((state) => state.app.searchType)
+import {
+  setActiveMarketTab,
+  setSearchParams,
+  selectSearchType,
+  selectSearchValue,
+  selectSearchLoading,
+  setSearchLoading,
+  setSearchType,
+  setSearchValue,
+  resetDooplications,
+} from '@/redux/appSlice'
+import { useAppDispatch } from '@/redux/hooks'
 
-  const handleSearchBar = async ({ value, type }) => {
+export default function Search() {
+  const dispatch = useAppDispatch()
+  const router = useRouter()
+  const loading = useSelector(selectSearchLoading)
+  const searchValue = useSelector(selectSearchValue)
+  const searchType = useSelector(selectSearchType)
+
+  const handleSearchBar = async (type: string, value: string) => {
     if (value === '') return
-    if (type === searchTypes.DOODLE && isNaN(value)) return
     const currentSearch = `${searchType}:${searchValue}`
     const newSearch = `${type}:${value}`
-    dispatch({
-      type: 'setSearchLoading',
-      payload: true,
-    })
-    dispatch({
-      type: 'setSearchType',
-      payload: type,
-    })
-    dispatch({
-      type: 'setSearchValue',
-      payload: value,
-    })
+    dispatch(setSearchLoading(true))
+    dispatch(setSearchType(type))
+    dispatch(setSearchValue(value))
 
     const searchParams = new URLSearchParams({
       [type]: value,
@@ -50,27 +51,12 @@ export default function Search() {
 
   useEffect(() => {
     document.title = 'Doopmarketeer | Search'
-    dispatch({
-      type: 'setActiveMarketTab',
-      payload: marketTabs.SEARCH,
-    })
-
-    dispatch(fetchCurrencies())
-    dispatch(loadSearchParams())
-
+    dispatch(setActiveMarketTab(marketTabs.SEARCH))
+    dispatch(setSearchParams())
     return () => {
-      dispatch({
-        type: 'setSearchType',
-        payload: searchTypes.ADDRESS,
-      })
-      dispatch({
-        type: 'setSearchValue',
-        payload: '',
-      })
-      dispatch({
-        type: 'setDooplications',
-        payload: [],
-      })
+      dispatch(setSearchType(searchTypes.ADDRESS))
+      dispatch(setSearchValue(''))
+      dispatch(resetDooplications())
     }
   }, [router.query, dispatch])
 
