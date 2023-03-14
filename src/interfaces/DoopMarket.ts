@@ -1,5 +1,5 @@
 interface DoopmarketListing {
-  tokenId: string
+  tokenId: number
   value: number
   timeStamp: number
   from: string

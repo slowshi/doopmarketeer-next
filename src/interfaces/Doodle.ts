@@ -18,7 +18,7 @@ interface Wearable {
   position?: string
   plurality?: boolean
   ipfs_hash_svg?: string
-  cost?: string
+  cost?: string | number
   image_uri: string
 }
 interface DooplicatorWearables {

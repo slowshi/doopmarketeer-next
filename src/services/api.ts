@@ -61,5 +61,7 @@ export const {
   useGetUserDoopsQuery,
   useGetLeaderboardQuery,
   useGetUndoopedDoodlesQuery,
+  useLazyGetUndoopedDooplicatorsQuery,
+  useLazyGetUndoopedDoodlesQuery,
   useGetUndoopedDooplicatorsQuery,
 } = doopmarketeerApi

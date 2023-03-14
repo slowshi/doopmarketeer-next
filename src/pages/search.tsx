@@ -1,6 +1,5 @@
 import { Heading, Container, Stack, Box, Text } from '@chakra-ui/react'
 import { useEffect } from 'react'
-import { useSelector } from 'react-redux'
 import { useRouter } from 'next/router'
 import { marketTabs, palette, searchTypes } from '../utils/constants'
 import Dooplications from '../components/Dooplications'
@@ -21,14 +20,14 @@ import {
   setSearchValue,
   resetDooplications,
 } from '@/redux/appSlice'
-import { useAppDispatch } from '@/redux/hooks'
+import { useAppDispatch, useAppSelector } from '@/redux/hooks'
 
 export default function Search() {
   const dispatch = useAppDispatch()
   const router = useRouter()
-  const loading = useSelector(selectSearchLoading)
-  const searchValue = useSelector(selectSearchValue)
-  const searchType = useSelector(selectSearchType)
+  const loading = useAppSelector(selectSearchLoading)
+  const searchValue = useAppSelector(selectSearchValue)
+  const searchType = useAppSelector(selectSearchType)
 
   const handleSearchBar = async (type: string, value: string) => {
     if (value === '') return
@@ -78,8 +77,8 @@ export default function Search() {
           {
             {
               [searchTypes.ADDRESS]: <Dooplications address={searchValue} />,
-              [searchTypes.DOODLE]: <SingleDoop tokenId={searchValue} />,
-              [searchTypes.DOOPLICATOR]: <DooplicatorCard tokenId={searchValue} />,
+              [searchTypes.DOODLE]: <SingleDoop tokenId={Number(searchValue)} />,
+              [searchTypes.DOOPLICATOR]: <DooplicatorCard tokenId={Number(searchValue)} />,
             }[searchType]
           }
         </Stack>

@@ -14,38 +14,39 @@ import {
   Link,
 } from '@chakra-ui/react'
 import { useState, useEffect } from 'react'
-import { useSelector, shallowEqual } from 'react-redux'
 import { currencyMap, IPFS_GATEWAY, palette } from '@/utils/constants'
 import { useAppDispatch, useAppSelector } from '@/redux/hooks'
 import { selectSearchLoading, setSearchLoading } from '@/redux/appSlice'
 import { useGetDooplicatiorAssetsQuery } from '@/services/api'
+import { RootState } from '@/redux/appStore'
+import { DoodleAttribute } from '@/interfaces/Doodle'
 
 interface Props {
-  tokenId?: string
+  tokenId: number
   price?: number
   url?: string
 }
 
-function DooplicatorCard({ tokenId = '', price, url }: Props) {
+function DooplicatorCard({ tokenId, price, url }: Props) {
   const dispatch = useAppDispatch()
-  const loading = useAppSelector(selectSearchLoading)
   const [avatarLoaded, setAvatarLoaded] = useState(false)
   useGetDooplicatiorAssetsQuery(tokenId)
-  const image = useSelector((state) => {
+  const loading = useAppSelector(selectSearchLoading)
+  const image = useAppSelector((state: RootState) => {
     const data = state.app.dooplicatorAssets[tokenId]
     if (typeof data === 'undefined') return ''
     return `${IPFS_GATEWAY}/${data.image.substring(7)}`
-  }, shallowEqual)
-
-  const attributes = useSelector((state) => {
+  })
+  type DoopAttributeMap = { [key: string]: string }
+  const attributes = useAppSelector((state: RootState): DoopAttributeMap => {
     const data = state.app.dooplicatorAssets[tokenId]
-    if (typeof data === 'undefined') return []
+    if (typeof data === 'undefined') return {} as DoopAttributeMap
     return data.attributes.reduce((acc, item) => {
       return {
         ...acc,
         [item.trait_type]: item.value,
       }
-    }, {})
+    }, {} as DoopAttributeMap)
   })
 
   function imageLoaded() {

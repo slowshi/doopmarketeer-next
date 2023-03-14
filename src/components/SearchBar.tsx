@@ -11,21 +11,20 @@ import {
   MenuList,
   MenuItem,
 } from '@chakra-ui/react'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, ChangeEvent, FormEvent } from 'react'
 import { FaSearch, FaChevronDown } from 'react-icons/fa'
 import { searchTypes, searchColors } from '@/utils/constants'
 import { SearchBarParams, SearchBarResponse } from '@/interfaces/SearchBar'
 function SearchBar({ value, type, onSubmit }: SearchBarParams) {
   const [input, setInput] = useState('')
   const [searchType, setSearchType] = useState(searchTypes.ADDRESS)
-  useEffect(() => {
-    setInput(value)
-    setSearchType(type)
-  }, [type, value])
 
-  const handleSearchAddress = async (e) => {
+  const handleFormSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     e.stopPropagation()
+    submitForm()
+  }
+  const submitForm = async () => {
     if (input === '') return
     const response: SearchBarResponse = {
       value: input,
@@ -34,18 +33,19 @@ function SearchBar({ value, type, onSubmit }: SearchBarParams) {
     console.log(response)
     onSubmit(type, value)
   }
-  const handleInputChange = (e) => {
+  const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     setInput(e.target.value)
-  }
-
-  const handleMenuSelect = (type) => {
-    setSearchType(type)
   }
 
   const isError = false
 
+  useEffect(() => {
+    setInput(value)
+    setSearchType(type)
+  }, [type, value])
+
   return (
-    <form className="w-100" onSubmit={handleSearchAddress}>
+    <form className="w-100" onSubmit={handleFormSubmit}>
       <FormControl isInvalid={isError} mb="2">
         <InputGroup>
           <InputLeftElement>
@@ -62,10 +62,10 @@ function SearchBar({ value, type, onSubmit }: SearchBarParams) {
                     icon={<FaChevronDown />}
                   />
                   <MenuList>
-                    <MenuItem onClick={() => handleMenuSelect(searchTypes.ADDRESS)}>Ethereum Address</MenuItem>
-                    <MenuItem onClick={() => handleMenuSelect(searchTypes.DOODLE)}>Doodle ID</MenuItem>
-                    <MenuItem onClick={() => handleMenuSelect(searchTypes.DOOPLICATOR)}>Dooplicator ID</MenuItem>
-                    <MenuItem onClick={() => handleMenuSelect(searchTypes.GENESIS_BOX)} isDisabled>
+                    <MenuItem onClick={() => setSearchType(searchTypes.ADDRESS)}>Ethereum Address</MenuItem>
+                    <MenuItem onClick={() => setSearchType(searchTypes.DOODLE)}>Doodle ID</MenuItem>
+                    <MenuItem onClick={() => setSearchType(searchTypes.DOOPLICATOR)}>Dooplicator ID</MenuItem>
+                    <MenuItem onClick={() => setSearchType(searchTypes.GENESIS_BOX)} isDisabled>
                       Genesis Box ID
                     </MenuItem>
                   </MenuList>
@@ -101,7 +101,7 @@ function SearchBar({ value, type, onSubmit }: SearchBarParams) {
               aria-label="Search"
               icon={<FaSearch />}
               size="md"
-              onClick={handleSearchAddress}
+              onClick={() => submitForm()}
             />
           </InputRightElement>
         </InputGroup>

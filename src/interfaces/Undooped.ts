@@ -1,5 +1,5 @@
 interface UndoopedDoodle {
-  tokenId: string
+  tokenId: number
   marketUrl: string
   currentBasePrice: number
   price?: number

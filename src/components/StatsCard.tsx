@@ -1,43 +1,34 @@
 import { Card, CardBody, SimpleGrid, Box, Stat, StatLabel, StatNumber } from '@chakra-ui/react'
-import { useSelector, shallowEqual } from 'react-redux'
+import { useSelector } from 'react-redux'
 import { currencyMap } from '@/utils/constants'
 import DoodleSpinner from './DoodleSpinner'
+import { useAppSelector } from '@/redux/hooks'
+import { selectTotalDoopCost, selectTotalDooplications } from '@/redux/appSlice'
+import { RootState } from '@/redux/appStore'
+import { Doodle } from '@/interfaces/Doodle'
+import { DoopTransactionInfo } from '@/interfaces/DoopTransactions'
 
-function StatsCard({ loading }) {
-  const getRarity = (state, dooplicatorId) => {
-    let multiple = null
+function StatsCard({ loading }: { loading: boolean }) {
+  type UserDoopAsset = { doop: DoopTransactionInfo; asset: Doodle }
+  const getRarity = (state: RootState, dooplicatorId: string): number => {
+    let multiple = 1
     if (dooplicatorId !== '') {
       const doopData = state.app.dooplicatorAssets[dooplicatorId]
       if (typeof doopData !== 'undefined') {
         const trait = doopData.attributes.find((item) => item.trait_type === 'Rarity')
-        if (trait.value === 'Rare') {
+        if (trait?.value === 'Rare') {
           multiple = 3
-        } else if (trait.value === 'Common') {
+        } else if (trait?.value === 'Common') {
           multiple = 2
-        } else if (trait.value === 'Very Common') {
+        } else if (trait?.value === 'Very Common') {
           multiple = 1
         }
       }
     }
     return multiple
   }
-
-  const allAssetsSelector = (state) => {
-    const data = state.app.dooplications
-    const assets = state.app.assets
-    const allAssets = data.map((doop) => {
-      if (typeof assets[doop.tokenId] === 'undefined') return { doop: {}, asset: {} }
-      return {
-        doop,
-        asset: assets[doop.tokenId],
-      }
-    })
-    return allAssets
-  }
-
-  const totalWearablesSelector = (state) => {
-    const allAssets = allAssetsSelector(state)
-    const totalWearables = allAssets.reduce((acc, item) => {
+  const totalWearableCount = (state: RootState, assets: UserDoopAsset[]): number =>
+    assets.reduce((acc: number, item: UserDoopAsset) => {
       let multiple = 1
       if (typeof item.doop.dooplicatorId !== 'undefined') {
         multiple = getRarity(state, item.doop.dooplicatorId)
@@ -47,13 +38,45 @@ function StatsCard({ loading }) {
       }
       return acc
     }, 0)
+  const selectAllUserAssets = (state: RootState): UserDoopAsset[] => {
+    const data = state.app.dooplications
+    const assets = state.app.assets
+    const allAssets: UserDoopAsset[] = data.map((doop) => {
+      if (typeof assets[doop.tokenId] === 'undefined')
+        return {
+          doop: {} as DoopTransactionInfo,
+          asset: {} as Doodle,
+        }
+      return {
+        doop,
+        asset: assets[doop.tokenId],
+      }
+    })
+    return allAssets
+  }
+  const selectTotalWearables = (state: RootState) => {
+    const allAssets = selectAllUserAssets(state)
+    const totalWearables = totalWearableCount(state, allAssets)
     return totalWearables
   }
-  const totalWearablesValueSelector = (state) => {
-    const allAssets = allAssetsSelector(state)
-    const ethPrice = state.app.ethPrice
 
-    const totalValue = allAssets.reduce((acc, item) => {
+  const selectCostPerWearable = (state: RootState): number => {
+    const allAssets = selectAllUserAssets(state).filter((item) => item.doop.functionName === 'dooplicateItem')
+    const doopMarketWearables = totalWearableCount(state, allAssets)
+    const totalCost = selectTotalDoopCost(state)
+    return doopMarketWearables === 0 ? 0 : totalCost / doopMarketWearables
+  }
+  const costPerWearables = useAppSelector(selectCostPerWearable)
+  const totalDoops = useAppSelector(selectTotalDooplications)
+  const totalCost = useAppSelector(selectTotalDoopCost)
+  const totalWearables = useAppSelector(selectTotalWearables)
+
+  const selectTotalWearableValue = (state: RootState) => {
+    const allAssets = selectAllUserAssets(state)
+    const ethPrice = state.app.ethPrice
+    const flowPrice = state.app.flowPrice
+
+    const totalValue = allAssets.reduce((acc: number, item: UserDoopAsset) => {
       let multiple = 1
       if (typeof item.doop.dooplicatorId !== 'undefined') {
         multiple = getRarity(state, item.doop.dooplicatorId)
@@ -61,7 +84,11 @@ function StatsCard({ loading }) {
       if (typeof item.asset.wearables !== 'undefined') {
         const assetValue = item.asset.costs.reduce((acc, cost) => {
           if (cost === null) return acc
-          return acc + cost.activeListing.price
+          let price = cost.activeListing.price
+          if (cost.activeListing?.vaultType !== 'A.ead892083b3e2c6c.DapperUtilityCoin.Vault') {
+            price = price / flowPrice
+          }
+          return acc + price
         }, 0)
         acc += assetValue * multiple
       }
@@ -69,29 +96,7 @@ function StatsCard({ loading }) {
     }, 0)
     return totalValue / ethPrice
   }
-  const totalCostSelector = (state) => {
-    return state.app.dooplications.reduce((acc, item) => acc + Number(item.value), 0)
-  }
-  const totalDoops = useSelector((state) => state.app.dooplications.length, shallowEqual)
-  const totalCost = useSelector(totalCostSelector, shallowEqual)
-  const costPerWearables = useSelector((state) => {
-    const doopMarketWearables = allAssetsSelector(state)
-      .filter((item) => item.doop.functionName === 'dooplicateItem')
-      .reduce((acc, item) => {
-        let multiple = 1
-        if (typeof item.doop.dooplicatorId !== 'undefined') {
-          multiple = getRarity(state, item.doop.dooplicatorId)
-        }
-        if (typeof item.asset.wearables !== 'undefined') {
-          acc += item.asset.wearables.length * multiple
-        }
-        return acc
-      }, 0)
-    const totalCost = totalCostSelector(state)
-    return doopMarketWearables === 0 ? 0 : totalCost / doopMarketWearables
-  })
-  const totalWearables = useSelector(totalWearablesSelector, shallowEqual)
-  const totalWearableValue = useSelector(totalWearablesValueSelector, shallowEqual)
+  const totalWearableValue = useSelector(selectTotalWearableValue)
   return (
     <Card w="full">
       <CardBody>
@@ -137,7 +142,5 @@ function StatsCard({ loading }) {
     </Card>
   )
 }
-StatsCard.defaultProps = {
-  loading: true,
-}
+
 export default StatsCard

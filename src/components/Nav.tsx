@@ -15,13 +15,14 @@ import {
   Container,
   useBreakpointValue,
 } from '@chakra-ui/react'
-import { useSelector } from 'react-redux'
 import { marketTabs } from '@/utils/constants'
 import NextLink from 'next/link'
 import { FaGithub, FaTwitter, FaBars } from 'react-icons/fa'
+import { useAppSelector } from '@/redux/hooks'
+import { selectActiveMarketTab } from '@/redux/appSlice'
 
 function WearbleImage() {
-  const activeMarketTab = useSelector((state) => state.app.activeMarketTab)
+  const activeMarketTab = useAppSelector(selectActiveMarketTab)
   const isMDScreen = useBreakpointValue({ base: false, md: true }, { fallback: 'md' })
 
   return (

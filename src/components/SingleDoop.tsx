@@ -1,10 +1,10 @@
+import { DoopTransactionInfo } from '@/interfaces/DoopTransactions'
 import { selectSearchLoading, setSearchLoading } from '@/redux/appSlice'
 import { useAppDispatch, useAppSelector } from '@/redux/hooks'
-import { Box } from '@chakra-ui/react'
 import { useEffect } from 'react'
 import DoodleCard from './DoodleCard'
 interface Props {
-  tokenId?: string
+  tokenId: number
 }
 
 function SingleDoop({ tokenId }: Props) {
@@ -17,13 +17,15 @@ function SingleDoop({ tokenId }: Props) {
 
   return (
     <DoodleCard
-      doop={{
-        tokenId,
-        dooplicatorId: '',
-        functionName: '',
-        timeStamp: 0,
-        from: '',
-      }}
+      doop={
+        {
+          tokenId,
+          dooplicatorId: '',
+          functionName: '',
+          timeStamp: 0,
+          from: '',
+        } as DoopTransactionInfo
+      }
     ></DoodleCard>
   )
 }

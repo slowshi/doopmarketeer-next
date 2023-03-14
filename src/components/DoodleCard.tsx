@@ -16,43 +16,57 @@ import {
 } from '@chakra-ui/react'
 import { useEffect } from 'react'
 import WearbleImage from './WearableImage'
-import { useSelector, shallowEqual } from 'react-redux'
+import { shallowEqual } from 'react-redux'
 import { currencyMap, IPFS_GATEWAY, palette } from '@/utils/constants'
 import NextLink from 'next/link'
 import { doopmarketeerApi, useGetDoodleAssetsQuery } from '@/services/api'
-
-function DoodleCard({ doop }) {
+import { DoopTransactionInfo } from '@/interfaces/DoopTransactions'
+import { useAppSelector } from '@/redux/hooks'
+import { RootState } from '@/redux/appStore'
+import { selectEthPrice } from '@/redux/appSlice'
+import { UndoopedDoodle } from '@/interfaces/Undooped'
+import { DoopmarketListing } from '@/interfaces/DoopMarket'
+interface DoodleCardProps {
+  doop: UndoopedDoodle | DoopTransactionInfo | DoopmarketListing
+}
+interface CostMap {
+  [key: string]: string
+}
+function DoodleCard({ doop }: DoodleCardProps) {
   const [avatarLoaded, setAvatarLoaded] = useBoolean()
   useGetDoodleAssetsQuery(doop.tokenId)
+  const ethPrice = useAppSelector(selectEthPrice)
 
-  const image = useSelector((state) => {
+  const image = useAppSelector((state) => {
     const data = state.app.assets[doop.tokenId]
     if (typeof data === 'undefined') return ''
     return `${IPFS_GATEWAY}/${data.image.substring(7)}`
-  }, shallowEqual)
+  })
 
-  const doopRaritySelector = (state) => {
-    let multiple = null
-    if (doop.dooplicatorId !== '') {
+  const selectDoopRarity = (state: RootState): number => {
+    let multiple = 1
+    if ('dooplicatorId' in doop) {
       const doopData = state.app.dooplicatorAssets[doop.dooplicatorId]
       if (typeof doopData !== 'undefined') {
         const trait = doopData.attributes.find((item) => item.trait_type === 'Rarity')
-        if (trait.value === 'Rare') {
-          multiple = 3
-        } else if (trait.value === 'Common') {
-          multiple = 2
-        } else if (trait.value === 'Very Common') {
-          multiple = 1
+        if (trait !== undefined) {
+          if (trait.value === 'Rare') {
+            multiple = 3
+          } else if (trait.value === 'Common') {
+            multiple = 2
+          } else if (trait.value === 'Very Common') {
+            multiple = 1
+          }
         }
       }
     }
     return multiple
   }
-  const doopRarity = useSelector(doopRaritySelector)
+  const doopRarity = useAppSelector(selectDoopRarity)
 
-  const totalCost = useSelector((state) => {
+  const totalCost = useAppSelector((state) => {
     const data = state.app.assets[doop.tokenId]
-    let multiple = doopRaritySelector(state)
+    let multiple = selectDoopRarity(state)
     if (multiple === null) multiple = 1
     if (typeof data === 'undefined') return 0
     const total = data.costs.reduce((acc, cost) => {
@@ -61,13 +75,12 @@ function DoodleCard({ doop }) {
     }, 0)
     return multiple * total
   }, shallowEqual)
-  const ethPrice = useSelector((state) => state.app.ethPrice)
 
-  const wearables = useSelector((state) => {
+  const wearables = useAppSelector((state: RootState) => {
     const data = state.app.assets[doop.tokenId]
     const flowPrice = state.app.flowPrice
     if (typeof data === 'undefined') return []
-    const costMap = data.costs.reduce((acc, cost) => {
+    const costMap: CostMap = data.costs.reduce((acc, cost) => {
       if (cost === null) return acc
       let price = cost.activeListing.price
       if (cost.activeListing?.vaultType !== 'A.ead892083b3e2c6c.DapperUtilityCoin.Vault') {
@@ -78,16 +91,20 @@ function DoodleCard({ doop }) {
         [cost.editionID]: price.toLocaleString(undefined, currencyMap.usd.toLocaleString),
       }
       return acc
-    }, {})
+    }, {} as CostMap)
     return data.wearables.map((wearable) => {
+      let wearableCost = '0'
+      if (wearable.wearable_id !== undefined && wearable.wearable_id in costMap) {
+        wearableCost = costMap[wearable.wearable_id]
+      }
       return {
         ...wearable,
-        cost: typeof costMap[wearable.wearable_id] !== 'undefined' ? costMap[wearable.wearable_id] : 0,
+        cost: wearableCost,
       }
     })
-  }, shallowEqual)
+  })
 
-  const isDooplicated = useSelector((state) => {
+  const isDooplicated = useAppSelector((state: RootState) => {
     const data = state.app.assets[doop.tokenId]
     if (typeof data === 'undefined') return false
     return data.wearables.filter((wearable) => typeof wearable.wearable_id === 'undefined').length === 0
@@ -98,13 +115,13 @@ function DoodleCard({ doop }) {
   }
 
   useEffect(() => {
-    if (doop.dooplicatorId !== '' && typeof doop.dooplicatorId !== 'undefined') {
-      doopmarketeerApi.endpoints.getDooplicatiorAssets.initiate(doop.dooplicatorId)
+    if ('dooplicatorId' in doop && doop.dooplicatorId !== '') {
+      doopmarketeerApi.endpoints.getDooplicatiorAssets.initiate(Number(doop.dooplicatorId))
     }
     return () => {
       setAvatarLoaded.off()
     }
-  }, [doop.dooplicatorId, setAvatarLoaded])
+  }, [doop, setAvatarLoaded])
 
   return (
     <Card>
@@ -123,10 +140,10 @@ function DoodleCard({ doop }) {
             </Box>
             <Box>
               <Stack h="100" justifyContent="space-evenly">
-                {doop.functionName ? (
+                {'functionName' in doop ? (
                   <Skeleton height="22px" isLoaded={avatarLoaded}>
                     <Text>
-                      {doop.functionName === 'dooplicateItem'
+                      {'value' in doop && doop.functionName === 'dooplicateItem'
                         ? `DoopMarket - ${Number(doop.value / 10e17).toLocaleString(
                             undefined,
                             currencyMap.eth.toLocaleString,
@@ -139,7 +156,7 @@ function DoodleCard({ doop }) {
                     <Text>{isDooplicated ? 'Dooplicated' : 'Not Dooplicated'}</Text>
                   </Skeleton>
                 )}
-                {typeof doop.currentBasePrice !== 'undefined' ? (
+                {'currentBasePrice' in doop ? (
                   <Skeleton height="22px" isLoaded={avatarLoaded}>
                     <Text>
                       Cost{' '}
@@ -150,14 +167,14 @@ function DoodleCard({ doop }) {
                 ) : (
                   ''
                 )}
-                {doop.timeStamp !== 0 ? (
+                {'timeStamp' in doop && doop.timeStamp !== 0 ? (
                   <Skeleton height="22px" isLoaded={avatarLoaded}>
                     <Text>{new Date(doop.timeStamp * 1000).toLocaleString()}</Text>
                   </Skeleton>
                 ) : (
                   ''
                 )}
-                {doop.from !== '' ? (
+                {'from' in doop ? (
                   <Skeleton height="22px" isLoaded={avatarLoaded}>
                     <Link
                       fontWeight="bold"
@@ -171,7 +188,7 @@ function DoodleCard({ doop }) {
                 ) : (
                   ''
                 )}
-                {typeof doop.marketUrl !== 'undefined' ? (
+                {'marketUrl' in doop ? (
                   <Skeleton height="22px" isLoaded={avatarLoaded}>
                     <Link fontWeight="bold" color={palette.ORANGE_100} href={doop.marketUrl} isExternal>
                       Listing

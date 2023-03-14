@@ -1,6 +1,5 @@
 import { Box, Stack, Text, Center, Heading, Button, Container } from '@chakra-ui/react'
 import { useState, useEffect } from 'react'
-import { useSelector, useDispatch, shallowEqual } from 'react-redux'
 import Nav from '@/components/Nav'
 import DoodleCard from '@/components/DoodleCard'
 import { marketTabs, palette } from '@/utils/constants'
@@ -8,39 +7,29 @@ import ScrollToTop from '@/components/ScrollToTop'
 import DoodleSpinner from '@/components/DoodleSpinner'
 import { useAppDispatch, useAppSelector } from '@/redux/hooks'
 import { selectFeed, selectLatestBlockNumber, setActiveMarketTab } from '@/redux/appSlice'
-import { useGetHistoryQuery } from '@/services/api'
+import { useGetHistoryQuery, useLazyGetFeedQuery } from '@/services/api'
 
 export default function Feed() {
   const dispatch = useAppDispatch()
-  const [loadingMore, setLoadingMore] = useState(false)
-  const [loading, setLoading] = useState(false)
-
   const feed = useAppSelector(selectFeed)
-  const latestBlockNumber = useAppSelector(selectLatestBlockNumber)
   const [page, setPage] = useState(1)
-  const { isLoading } = useGetHistoryQuery({ page, limit: 5 })
+  const { isLoading, isFetching } = useGetHistoryQuery({ page, limit: 5 })
+  const lastBlock = useAppSelector(selectLatestBlockNumber)
+  const [trigger] = useLazyGetFeedQuery({
+    pollingInterval: 10000,
+  })
 
   const loadMore = async () => {
-    setLoadingMore(true)
-    // await dispatch(fetchHistory(page + 1))
     setPage(page + 1)
-    setLoadingMore(false)
   }
 
   useEffect(() => {
     document.title = 'Doopmarketeer | Feed'
     dispatch(setActiveMarketTab(marketTabs.FEED))
-    // return () => {
-    //   dispatch(resetFeed())
-    // }
-  }, [dispatch])
-
-  // useEffect(() => {
-  //   const feedInterval = setInterval(async () => {
-  //     await dispatch(checkFeed(latestBlockNumber))
-  //   }, 20000)
-  //   return () => clearInterval(feedInterval)
-  // }, [latestBlockNumber, dispatch])
+    if (lastBlock > 0) {
+      trigger(lastBlock)
+    }
+  }, [lastBlock, dispatch, trigger])
   return (
     <>
       <ScrollToTop />
@@ -62,7 +51,7 @@ export default function Feed() {
                 <DoodleCard key={doop.tokenId} doop={doop}></DoodleCard>
               ))}
               <Center>
-                <Button isLoading={loadingMore} colorScheme="whiteAlpha" onClick={loadMore}>
+                <Button isLoading={isFetching} colorScheme="whiteAlpha" onClick={loadMore}>
                   Load More
                 </Button>
               </Center>

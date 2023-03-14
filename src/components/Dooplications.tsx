@@ -5,13 +5,14 @@ import StatsCard from './StatsCard'
 import { useAppDispatch, useAppSelector } from '@/redux/hooks'
 import { selectDoodlesToLoad, selectSearchLoading, selectTotalDooplications, setSearchLoading } from '@/redux/appSlice'
 import { doopmarketeerApi, useLazyGetUserDoopsQuery } from '@/services/api'
+import { DoopTransactionInfo } from '@/interfaces/DoopTransactions'
 
-function Dooplications({ address }) {
+function Dooplications({ address }: { address: string }) {
   const dispatch = useAppDispatch()
   const [page, setPage] = useState(1)
   const loading = useAppSelector(selectSearchLoading)
   const [loadingStats, setLoadingStats] = useBoolean()
-  const [trigger, { isLoading, isFetching, isUninitialized }] = useLazyGetUserDoopsQuery(address)
+  const [trigger, { isLoading, isFetching, isUninitialized }] = useLazyGetUserDoopsQuery()
   const doodlesToLoad = useAppSelector(selectDoodlesToLoad)
   const dooplications = useAppSelector((state) => {
     return state.app.dooplications.slice(0, page * 5)
@@ -24,23 +25,22 @@ function Dooplications({ address }) {
   }
 
   const fetchDoops = async () => {
-    batchPromise(doodlesToLoad, 5, fetchAssets)
+    batchPromise(doodlesToLoad, 5)
   }
 
-  async function batchPromise(items, batchSize, asyncFunc) {
+  async function batchPromise(items: DoopTransactionInfo[], batchSize: number) {
+    const fetchAssets = async (doop: DoopTransactionInfo) => {
+      await dispatch(doopmarketeerApi.endpoints.getDoodleAssets.initiate(doop.tokenId))
+      const doopId = doop.dooplicatorId
+      if (doopId !== '' && typeof doopId !== 'undefined') {
+        await dispatch(doopmarketeerApi.endpoints.getDooplicatiorAssets.initiate(Number(doopId)))
+      }
+    }
     for (let i = 0; i < items.length; i += batchSize) {
       const batch = items.slice(i, i + batchSize)
-      await Promise.all(batch.map(asyncFunc))
+      await Promise.all(batch.map(fetchAssets))
     }
     setLoadingStats.off()
-  }
-
-  async function fetchAssets(doop) {
-    await dispatch(doopmarketeerApi.endpoints.getDoodleAssets.initiate(doop.tokenId))
-    const doopId = doop.dooplicatorId
-    if (doopId !== '' && typeof doopId !== 'undefined') {
-      await dispatch(doopmarketeerApi.endpoints.getDooplicatiorAssets.initiate(doopId))
-    }
   }
 
   useEffect(() => {

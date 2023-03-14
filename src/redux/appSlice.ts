@@ -1,7 +1,5 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
-import type { PayloadAction } from '@reduxjs/toolkit'
 import type { RootState } from './appStore'
-import { AppActions } from './interfaces'
 import { doopmarketeerApi } from '@/services/api'
 import { getCurrencyConversion } from '@/utils/ethersUtils'
 import { DoopmarketListing } from '@/interfaces/DoopMarket'
@@ -29,7 +27,7 @@ interface AppState {
   activeMarketTab: string
   leaderboardSort: string
 }
-// Define the initial state using that type
+
 const initialState: AppState = {
   ethPrice: 0,
   flowPrice: 0,
@@ -175,6 +173,7 @@ export const {
   setSortLeaderboard,
   resetFeed,
 } = appSlice.actions
+
 export const selectFeed = (state: RootState) => state.app.feed
 export const selectLatestBlockNumber = (state: RootState) => {
   let blockNumber = 0
@@ -183,6 +182,7 @@ export const selectLatestBlockNumber = (state: RootState) => {
   }
   return blockNumber
 }
+export const selectEthPrice = (state: RootState) => state.app.ethPrice
 export const selectActiveMarketTab = (state: RootState) => state.app.activeMarketTab
 export const selectTotalDoopmarket = (state: RootState) => state.app.doopMarket.length
 export const selectSearchLoading = (state: RootState) => state.app.searchLoading
@@ -191,6 +191,7 @@ export const selectDoodlesToLoad = (state: RootState) => [...state.app.dooplicat
 export const selectSearchValue = (state: RootState) => state.app.searchValue
 export const selectSearchType = (state: RootState) => state.app.searchType
 export const selectLeaderboardLength = (state: RootState) => state.app.leaderboard.length
+export const selectUndoopedDooplicators = (state: RootState) => state.app.undoopedDooplicators
 export const selectLeaderboardTotals = (state: RootState) =>
   state.app.leaderboard.reduce(
     (acc, user) => {
@@ -235,5 +236,55 @@ export const selectLeaderboard = (state: RootState) => {
 
   return data.slice(0, 20)
 }
+export const selectTotalDoopCost = (state: RootState) =>
+  state.app.dooplications.reduce((acc, item) => acc + Number(item.value), 0)
 
+// type UserDoopAsset = { doop: DoopTransactionInfo; asset: Doodle }
+// export const selectAllUserAssets = (state: RootState): UserDoopAsset[] => {
+//   const data = state.app.dooplications
+//   const assets = state.app.assets
+//   const allAssets: UserDoopAsset[] = data.map((doop) => {
+//     if (typeof assets[doop.tokenId] === 'undefined')
+//       return {
+//         doop: {} as DoopTransactionInfo,
+//         asset: {} as Doodle,
+//       }
+//     return {
+//       doop,
+//       asset: assets[doop.tokenId],
+//     }
+//   })
+//   return allAssets
+// }
+// export const getRarity = (state: RootState, dooplicatorId: string): number => {
+//   let multiple = 1
+//   if (dooplicatorId !== '') {
+//     const doopData = state.app.dooplicatorAssets[dooplicatorId]
+//     if (typeof doopData !== 'undefined') {
+//       const trait = doopData.attributes.find((item) => item.trait_type === 'Rarity')
+//       if (trait?.value === 'Rare') {
+//         multiple = 3
+//       } else if (trait?.value === 'Common') {
+//         multiple = 2
+//       } else if (trait?.value === 'Very Common') {
+//         multiple = 1
+//       }
+//     }
+//   }
+//   return multiple
+// }
+// export const selectAllUserWearables = (state: RootState) => {
+//   const allAssets = selectAllUserAssets(state)
+//   const totalWearables = allAssets.reduce((acc: number, item: UserDoopAsset) => {
+//     let multiple = 1
+//     if (typeof item.doop.dooplicatorId !== 'undefined') {
+//       multiple = getRarity(state, item.doop.dooplicatorId)
+//     }
+//     if (typeof item.asset.wearables !== 'undefined') {
+//       acc += item.asset.wearables.length * multiple
+//     }
+//     return acc
+//   }, 0)
+//   return totalWearables
+// }
 export default appSlice.reducer

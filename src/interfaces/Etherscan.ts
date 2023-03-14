@@ -13,7 +13,7 @@ interface Transaction {
   transactionIndex: string
   from: string
   to: string
-  value: string
+  value: number
   gas: string
   gasPrice: string
   isError: string

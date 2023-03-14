@@ -1,5 +1,5 @@
 interface DecodedInfo {
-  tokenId: string
+  tokenId: number
   dooplicatorId: string
   addressOnTheOtherSide: string
 }
@@ -10,12 +10,12 @@ interface DoopTransactionInfo {
   from: string
   hash: string
   to: string
-  value: string
+  value: number
   gas: string
   gasPrice: string
   cumulativeGasUsed: string
   functionName: string
-  tokenId: string
+  tokenId: number
   dooplicatorId: string
   addressOnTheOtherSide?: string
 }

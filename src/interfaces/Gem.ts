@@ -10,7 +10,7 @@ interface GemResponse {
     address: string
   }
   collectionName: string
-  tokenId: string
+  tokenId: number
   priceInfo: {
     price: string
     asset: string
