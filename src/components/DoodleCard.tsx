@@ -174,7 +174,7 @@ function DoodleCard({ doop }: DoodleCardProps) {
                 ) : (
                   ''
                 )}
-                {'from' in doop ? (
+                {'from' in doop && doop.from !== '' ? (
                   <Skeleton height="22px" isLoaded={avatarLoaded}>
                     <Link
                       fontWeight="bold"

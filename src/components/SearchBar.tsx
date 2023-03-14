@@ -14,7 +14,7 @@ import {
 import { useState, useEffect, ChangeEvent, FormEvent } from 'react'
 import { FaSearch, FaChevronDown } from 'react-icons/fa'
 import { searchTypes, searchColors } from '@/utils/constants'
-import { SearchBarParams, SearchBarResponse } from '@/interfaces/SearchBar'
+import { SearchBarParams } from '@/interfaces/SearchBar'
 function SearchBar({ value, type, onSubmit }: SearchBarParams) {
   const [input, setInput] = useState('')
   const [searchType, setSearchType] = useState(searchTypes.ADDRESS)
@@ -26,12 +26,7 @@ function SearchBar({ value, type, onSubmit }: SearchBarParams) {
   }
   const submitForm = async () => {
     if (input === '') return
-    const response: SearchBarResponse = {
-      value: input,
-      type: searchType,
-    }
-    console.log(response)
-    onSubmit(type, value)
+    onSubmit(searchType, input)
   }
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     setInput(e.target.value)
