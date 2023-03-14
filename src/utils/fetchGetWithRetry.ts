@@ -1,10 +1,6 @@
 type FetchParams = number | string | null | undefined | unknown
 
-export default async function fetchGetWithRetry(
-  url: string,
-  retries = 5,
-  timeout = 100,
-): Promise<FetchParams | undefined | null> {
+export default async function fetchGetWithRetry(url: string, retries = 5, timeout = 100): Promise<FetchParams> {
   try {
     const response = await fetch(url)
     return await response.json()

@@ -19,7 +19,6 @@ import { useAppDispatch, useAppSelector } from '@/redux/hooks'
 import { selectSearchLoading, setSearchLoading } from '@/redux/appSlice'
 import { useGetDooplicatiorAssetsQuery } from '@/services/api'
 import { RootState } from '@/redux/appStore'
-import { DoodleAttribute } from '@/interfaces/Doodle'
 
 interface Props {
   tokenId: number

@@ -110,10 +110,5 @@ function SearchBar({ value, type, onSubmit }: SearchBarParams) {
     </form>
   )
 }
-SearchBar.defaultProps = {
-  value: '',
-  type: searchTypes.ADDRESS,
-  onSubmit: () => {},
-}
 
 export default SearchBar
