@@ -95,7 +95,7 @@ function WearbleImage() {
         </GridItem>
         <GridItem colSpan={1} justifySelf="end">
           {isMDScreen ? (
-            <Link href="https://github.com/slowshi/doopmarketeer" isExternal>
+            <Link href="https://github.com/slowshi/doopmarketeer-next" isExternal>
               <IconButton colorScheme="white" aria-label="Github" icon={<FaGithub />} size="md" />
             </Link>
           ) : (
