@@ -57,6 +57,17 @@ const getUniqueFeed = (feed: DoopTransactionInfo[]): DoopTransactionInfo[] => {
   }, [] as DoopTransactionInfo[])
   return result
 }
+const getUniqueUndooped = (feed: UndoopedDoodle[]): UndoopedDoodle[] => {
+  const uniqueIds = Array.from(new Set(feed.map((item) => item.tokenId)))
+  const result: UndoopedDoodle[] = uniqueIds.reduce((acc, tokenId) => {
+    const item = feed.find((item) => item.tokenId === tokenId)
+    if (item) {
+      acc.push(item)
+    }
+    return acc
+  }, [] as UndoopedDoodle[])
+  return result
+}
 export const getCurrencies = createAsyncThunk('app/getCurrencies', async () => {
   const eth = await getCurrencyConversion('eth')
   const flow = await getCurrencyConversion('flow')
@@ -147,7 +158,8 @@ export const appSlice = createSlice({
       state.undoopedDooplicators = action.payload
     })
     builder.addMatcher(doopmarketeerApi.endpoints.getUndoopedDoodles.matchFulfilled, (state, action) => {
-      state.undoopedDoodles = [...state.undoopedDoodles, ...action.payload]
+      console.log('fulfilled')
+      state.undoopedDoodles = getUniqueUndooped([...state.undoopedDoodles, ...action.payload])
     })
     builder.addMatcher(doopmarketeerApi.endpoints.getLeaderboard.matchFulfilled, (state, action) => {
       state.leaderboard = action.payload
@@ -192,6 +204,7 @@ export const selectSearchValue = (state: RootState) => state.app.searchValue
 export const selectSearchType = (state: RootState) => state.app.searchType
 export const selectLeaderboardLength = (state: RootState) => state.app.leaderboard.length
 export const selectUndoopedDooplicators = (state: RootState) => state.app.undoopedDooplicators
+export const selectUndoopedDoodles = (state: RootState) => state.app.undoopedDoodles
 export const selectLeaderboardTotals = (state: RootState) =>
   state.app.leaderboard.reduce(
     (acc, user) => {

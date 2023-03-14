@@ -57,7 +57,7 @@ export default function Search() {
       dispatch(setSearchValue(''))
       dispatch(resetDooplications())
     }
-  }, [router.query, dispatch])
+  }, [router.asPath, dispatch])
 
   return (
     <>

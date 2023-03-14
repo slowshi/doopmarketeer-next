@@ -44,19 +44,19 @@ function WearbleImage() {
                     icon={<FaBars />}
                   />
                   <MenuList>
-                    <MenuItem as={NextLink} href="/">
+                    <MenuItem as={NextLink} href="/" shallow>
                       Feed
                     </MenuItem>
-                    <MenuItem as={NextLink} href="/doopmarket">
+                    <MenuItem as={NextLink} href="/doopmarket" shallow>
                       DoopMarket
                     </MenuItem>
-                    <MenuItem as={NextLink} href="/search">
+                    <MenuItem as={NextLink} href="/search" shallow>
                       Search
                     </MenuItem>
-                    <MenuItem as={NextLink} href="/undooped">
+                    <MenuItem as={NextLink} href="/undooped" shallow>
                       Undooped
                     </MenuItem>
-                    <MenuItem as={NextLink} href="/leaderboard">
+                    <MenuItem as={NextLink} href="/leaderboard" shallow>
                       Leaderboard
                     </MenuItem>
                     <MenuDivider />
@@ -70,7 +70,7 @@ function WearbleImage() {
                           size="md"
                         />
                       </Link>
-                      <Link href="https://github.com/slowshi/doopmarketeer" isExternal>
+                      <Link href="https://github.com/slowshi/doopmarketeer-next" isExternal>
                         <IconButton
                           colorScheme="white"
                           color="black"
@@ -109,6 +109,7 @@ function WearbleImage() {
             colorScheme={activeMarketTab === marketTabs.FEED ? 'blackAlpha' : 'whiteAlpha'}
             as={NextLink}
             href="/"
+            shallow
           >
             Feed
           </Button>
@@ -116,6 +117,7 @@ function WearbleImage() {
             colorScheme={activeMarketTab === marketTabs.DOOPMARKET ? 'blackAlpha' : 'whiteAlpha'}
             as={NextLink}
             href="/doopmarket"
+            shallow
           >
             DoopMarket
           </Button>
@@ -123,6 +125,7 @@ function WearbleImage() {
             colorScheme={activeMarketTab === marketTabs.SEARCH ? 'blackAlpha' : 'whiteAlpha'}
             as={NextLink}
             href="/search"
+            shallow
           >
             Search
           </Button>
@@ -130,6 +133,7 @@ function WearbleImage() {
             colorScheme={activeMarketTab === marketTabs.UNDOOPED ? 'blackAlpha' : 'whiteAlpha'}
             as={NextLink}
             href="/undooped"
+            shallow
           >
             Undooped
           </Button>
@@ -137,6 +141,7 @@ function WearbleImage() {
             colorScheme={activeMarketTab === marketTabs.LEADERBOARD ? 'blackAlpha' : 'whiteAlpha'}
             as={NextLink}
             href="/leaderboard"
+            shallow
           >
             Leaderboard
           </Button>

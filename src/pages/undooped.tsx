@@ -23,14 +23,16 @@ import Nav from '@/components/Nav'
 import DoodleSpinner from '@/components/DoodleSpinner'
 import DooplicatorCard from '@/components/DooplicatorCard'
 import { useRouter } from 'next/router'
+
 import {
   resetUndoopedDoodles,
   resetUndoopedDooplicators,
+  selectUndoopedDoodles,
   selectUndoopedDooplicators,
   setActiveMarketTab,
 } from '@/redux/appSlice'
 import { useAppDispatch, useAppSelector } from '@/redux/hooks'
-import { doopmarketeerApi, useLazyGetUndoopedDooplicatorsQuery } from '@/services/api'
+import { useLazyGetUndoopedDoodlesQuery, useLazyGetUndoopedDooplicatorsQuery } from '@/services/api'
 
 export default function Undooped() {
   const titles = {
@@ -42,40 +44,24 @@ export default function Undooped() {
   const limit = 20
   const dispatch = useAppDispatch()
   const router = useRouter()
-  const [loading, setLoading] = useState(false)
-  const [loadingMore, setLoadingMore] = useState(false)
+
+  const [triggerDoops, { isLoading: doopLoading }] = useLazyGetUndoopedDooplicatorsQuery()
+  const [triggerDoodles, { isLoading: loading, isFetching: loadingMore }] = useLazyGetUndoopedDoodlesQuery()
+
   const [page, setPage] = useState(1)
   const [menuTitle, setMenuTitle] = useState('Doodles')
   const [tabIndex, setTabIndex] = useState(0)
-  const [trigger, { isLoading: doopLoading }] = useLazyGetUndoopedDooplicatorsQuery()
-  const undoopedDoodles = useAppSelector((state) =>
-    state.app.undoopedDoodles.map((item) => {
-      return {
-        ...item,
-        functionName: '',
-        timeStamp: 0,
-        from: '',
-      }
-    }),
-  )
+  const undoopedDoodles = useAppSelector(selectUndoopedDoodles)
   const undoopedDooplicators = useAppSelector(selectUndoopedDooplicators)
 
   const getDoodles = async () => {
-    setPage(1)
-    setLoading(true)
     dispatch(resetUndoopedDoodles)
-    await dispatch(doopmarketeerApi.endpoints.getUndoopedDoodles.initiate({ page: 1, limit }))
-    setLoading(false)
+    triggerDoodles({ page: 1, limit })
   }
 
   const loadMore = async () => {
-    setLoadingMore(true)
-    await dispatch(doopmarketeerApi.endpoints.getUndoopedDoodles.initiate({ page: page + 1, limit }))
+    triggerDoodles({ page: page + 1, limit })
     setPage(page + 1)
-    if (undoopedDoodles.length === 0) {
-      await loadMore()
-    }
-    setLoadingMore(false)
   }
 
   const getDoops = async (type: string) => {
@@ -86,7 +72,7 @@ export default function Undooped() {
     } else if (type === undoopedTypes.RARE) {
       index = 2
     }
-    trigger(index)
+    triggerDoops(index)
   }
 
   const loadUndooped = (type: string) => {
@@ -127,7 +113,7 @@ export default function Undooped() {
     } else {
       handleMenuSelect(undoopedTypes.DOODLES)
     }
-  }, [dispatch])
+  }, [dispatch, router.asPath])
 
   return (
     <>
@@ -194,7 +180,7 @@ export default function Undooped() {
                 <Stack w="full" spacing="4" paddingBottom="8">
                   {undoopedDooplicators.map((doop) => (
                     <DooplicatorCard
-                      key={Number(doop.id)}
+                      key={doop.id}
                       tokenId={Number(doop.id)}
                       url={doop.url}
                       price={Number(doop.priceInfo.price)}
