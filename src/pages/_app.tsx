@@ -3,7 +3,7 @@ import '@/styles/globals.css'
 import { ChakraProvider } from '@chakra-ui/react'
 import { Provider } from 'react-redux'
 import { extendTheme } from '@chakra-ui/react'
-// import { useStore } from '@/redux/store'
+import { Analytics } from '@vercel/analytics/react'
 import { store } from '@/redux/appStore'
 import { getCurrencies } from '@/redux/appSlice'
 const theme = extendTheme({
@@ -19,6 +19,7 @@ export default function App({ Component, pageProps }: AppProps) {
     <Provider store={store}>
       <ChakraProvider theme={theme}>
         <Component {...pageProps} />
+        <Analytics />
       </ChakraProvider>
     </Provider>
   )
