@@ -158,7 +158,6 @@ export const appSlice = createSlice({
       state.undoopedDooplicators = action.payload
     })
     builder.addMatcher(doopmarketeerApi.endpoints.getUndoopedDoodles.matchFulfilled, (state, action) => {
-      console.log('fulfilled')
       state.undoopedDoodles = getUniqueUndooped([...state.undoopedDoodles, ...action.payload])
     })
     builder.addMatcher(doopmarketeerApi.endpoints.getLeaderboard.matchFulfilled, (state, action) => {
@@ -252,52 +251,4 @@ export const selectLeaderboard = (state: RootState) => {
 export const selectTotalDoopCost = (state: RootState) =>
   state.app.dooplications.reduce((acc, item) => acc + Number(item.value), 0)
 
-// type UserDoopAsset = { doop: DoopTransactionInfo; asset: Doodle }
-// export const selectAllUserAssets = (state: RootState): UserDoopAsset[] => {
-//   const data = state.app.dooplications
-//   const assets = state.app.assets
-//   const allAssets: UserDoopAsset[] = data.map((doop) => {
-//     if (typeof assets[doop.tokenId] === 'undefined')
-//       return {
-//         doop: {} as DoopTransactionInfo,
-//         asset: {} as Doodle,
-//       }
-//     return {
-//       doop,
-//       asset: assets[doop.tokenId],
-//     }
-//   })
-//   return allAssets
-// }
-// export const getRarity = (state: RootState, dooplicatorId: string): number => {
-//   let multiple = 1
-//   if (dooplicatorId !== '') {
-//     const doopData = state.app.dooplicatorAssets[dooplicatorId]
-//     if (typeof doopData !== 'undefined') {
-//       const trait = doopData.attributes.find((item) => item.trait_type === 'Rarity')
-//       if (trait?.value === 'Rare') {
-//         multiple = 3
-//       } else if (trait?.value === 'Common') {
-//         multiple = 2
-//       } else if (trait?.value === 'Very Common') {
-//         multiple = 1
-//       }
-//     }
-//   }
-//   return multiple
-// }
-// export const selectAllUserWearables = (state: RootState) => {
-//   const allAssets = selectAllUserAssets(state)
-//   const totalWearables = allAssets.reduce((acc: number, item: UserDoopAsset) => {
-//     let multiple = 1
-//     if (typeof item.doop.dooplicatorId !== 'undefined') {
-//       multiple = getRarity(state, item.doop.dooplicatorId)
-//     }
-//     if (typeof item.asset.wearables !== 'undefined') {
-//       acc += item.asset.wearables.length * multiple
-//     }
-//     return acc
-//   }, 0)
-//   return totalWearables
-// }
 export default appSlice.reducer
