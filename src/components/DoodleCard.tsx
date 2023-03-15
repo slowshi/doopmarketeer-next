@@ -17,7 +17,7 @@ import {
 import { useEffect } from 'react'
 import WearbleImage from './WearableImage'
 import { shallowEqual } from 'react-redux'
-import { currencyMap, IPFS_GATEWAY, palette } from '@/utils/constants'
+import { currencyMap, IPFS_URL, palette } from '@/utils/constants'
 import NextLink from 'next/link'
 import { doopmarketeerApi, useGetDoodleAssetsQuery } from '@/services/api'
 import { DoopTransactionInfo } from '@/interfaces/DoopTransactions'
@@ -40,7 +40,7 @@ function DoodleCard({ doop }: DoodleCardProps) {
   const image = useAppSelector((state) => {
     const data = state.app.assets[doop.tokenId]
     if (typeof data === 'undefined') return ''
-    return `${IPFS_GATEWAY}/${data.image.substring(7)}`
+    return `${IPFS_URL}/${data.image.substring(7)}`
   })
 
   const selectDoopRarity = (state: RootState): number => {

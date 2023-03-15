@@ -14,7 +14,7 @@ import {
   Link,
 } from '@chakra-ui/react'
 import { useState, useEffect } from 'react'
-import { currencyMap, IPFS_GATEWAY, palette } from '@/utils/constants'
+import { currencyMap, IPFS_URL, palette } from '@/utils/constants'
 import { useAppDispatch, useAppSelector } from '@/redux/hooks'
 import { selectSearchLoading, setSearchLoading } from '@/redux/appSlice'
 import { useGetDooplicatiorAssetsQuery } from '@/services/api'
@@ -34,7 +34,7 @@ function DooplicatorCard({ tokenId, price, url }: Props) {
   const image = useAppSelector((state: RootState) => {
     const data = state.app.dooplicatorAssets[tokenId]
     if (typeof data === 'undefined') return ''
-    return `${IPFS_GATEWAY}/${data.image.substring(7)}`
+    return `${IPFS_URL}/${data.image.substring(7)}`
   })
   type DoopAttributeMap = { [key: string]: string }
   const attributes = useAppSelector((state: RootState): DoopAttributeMap => {

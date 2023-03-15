@@ -264,7 +264,6 @@ const doopContracts: DoopContracts = {
 }
 
 const API_URL = 'api'
-const IPFS_GATEWAY = 'https://ipfs.io/ipfs'
 const DOOPLICATOR_URL = 'https://metadata.artlab.xyz/0185fa75-ba04-8156-9fbe-bb39dc263392'
 const currencyMap: CurrencyMap = {
   usd: {
@@ -383,7 +382,6 @@ export {
   doopContracts,
   API_URL,
   DOOPLICATOR_URL,
-  IPFS_GATEWAY,
   currencyMap,
   marketTabs,
   palette,

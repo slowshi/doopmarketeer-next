@@ -10,5 +10,8 @@
     "ecmaVersion": 9,
     "project": "./tsconfig.json"
   },
-  "plugins": ["@typescript-eslint"]
+  "plugins": ["@typescript-eslint", "prettier"],
+  "rules": {
+    "prettier/prettier": "error"
+  }
 }
