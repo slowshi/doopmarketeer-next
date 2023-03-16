@@ -2,7 +2,7 @@ type FetchParams = number | string | null | undefined | unknown
 
 export default async function fetchGetWithRetry(url: string, retries = 5, timeout = 100): Promise<FetchParams> {
   try {
-    const response = await fetch(url)
+    const response = await fetch(url, { mode: 'cors' })
     return await response.json()
   } catch (error: any) {
     if (retries > 0) {

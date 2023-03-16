@@ -245,7 +245,7 @@ const assumedWearablesMap: AssumedWearablesMap = {
 }
 
 const DOOPLICATION_BLOCK = 16508485
-const IPFS_URL = 'https://cloudflare-ipfs.com/ipfs'
+const IPFS_URL = 'https://wcnft.mypinata.cloud/ipfs'
 const DOODLE_METADATA_URL = `${IPFS_URL}/QmPMc4tcBsMqLRuCQtPmPe84bpSjrC3Ky7t3JWuHXYB4aS`
 const DOOPLICATOR_WEARABLES_URL = 'https://doodles.app/api/dooplicator'
 const ETHEREUM_RPC_URL = 'https://mainnet.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161'
