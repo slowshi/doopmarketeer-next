@@ -21,7 +21,7 @@ import { currencyMap, IPFS_URL, palette } from '@/utils/constants'
 import NextLink from 'next/link'
 import { doopmarketeerApi, useGetDoodleAssetsQuery } from '@/services/api'
 import { DoopTransactionInfo } from '@/interfaces/DoopTransactions'
-import { useAppSelector } from '@/redux/hooks'
+import { useAppDispatch, useAppSelector } from '@/redux/hooks'
 import { RootState } from '@/redux/appStore'
 import { selectEthPrice } from '@/redux/appSlice'
 import { UndoopedDoodle } from '@/interfaces/Undooped'
@@ -33,6 +33,7 @@ interface CostMap {
   [key: string]: string
 }
 function DoodleCard({ doop }: DoodleCardProps) {
+  const dispatch = useAppDispatch()
   const [avatarLoaded, setAvatarLoaded] = useBoolean()
   useGetDoodleAssetsQuery(doop.tokenId)
   const ethPrice = useAppSelector(selectEthPrice)
@@ -114,10 +115,13 @@ function DoodleCard({ doop }: DoodleCardProps) {
     setAvatarLoaded.on()
   }
 
-  useEffect(() => {
+  const fetchDooplicator = async () => {
     if ('dooplicatorId' in doop && doop.dooplicatorId !== '') {
-      doopmarketeerApi.endpoints.getDooplicatiorAssets.initiate(Number(doop.dooplicatorId))
+      await dispatch(doopmarketeerApi.endpoints.getDooplicatiorAssets.initiate(Number(doop.dooplicatorId)))
     }
+  }
+  useEffect(() => {
+    fetchDooplicator()
     return () => {
       setAvatarLoaded.off()
     }
