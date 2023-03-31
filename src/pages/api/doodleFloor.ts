@@ -23,8 +23,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
       `${DOOPLICATOR_WEARABLES_URL}/${tokenId}`,
     )) as DooplicatorWearables
     const isDooplicated =
-      wearablesResponse.wearables.filter((wearable: Wearable) => typeof wearable.wearable_id === 'undefined').length ===
-      0
+      wearablesResponse.wearables.filter((wearable: Wearable) => typeof wearable.id === 'undefined').length === 0
     if (!isDooplicated) {
       undooped = [...undooped, { tokenId, marketUrl, currentBasePrice, supportsWyvern }]
     }

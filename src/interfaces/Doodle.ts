@@ -9,7 +9,7 @@ interface DoodleMetadata {
   attributes: DoodleAttribute[]
 }
 interface Wearable {
-  wearable_id?: string
+  id?: number
   ipfs_hash?: string
   name?: string
   trim?: string

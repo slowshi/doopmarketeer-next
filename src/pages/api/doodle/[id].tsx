@@ -36,7 +36,7 @@ export default async function userHandler(req: NextApiRequest, res: NextApiRespo
   }, [])
   let assumedIndex = 0
   const wearables = wearablesResponse.wearables.map((wearable: Wearable) => {
-    if (typeof wearable.wearable_id === 'undefined') {
+    if (typeof wearable.id === 'undefined') {
       if (assumedIndex < assumed.length) {
         const assumedWearable = assumed[assumedIndex]
         assumedIndex++
@@ -68,21 +68,23 @@ export default async function userHandler(req: NextApiRequest, res: NextApiRespo
       }
     }
   `
-  const costPromises: Promise<SearchMarketplaceNFTsResponse>[] = wearables
-    .filter((item) => typeof item.wearable_id !== 'undefined')
-    .map((item) => {
-      const collectionId = item.wearable_id !== '244' ? 'doodleswearables' : 'doodlesbetapass'
+  const costPromises: Promise<SearchMarketplaceNFTsResponse>[] = wearables.reduce((acc, item) => {
+    if (typeof item.id !== 'undefined') {
+      const collectionId = item.id !== 244 ? 'doodleswearables' : 'doodlesbetapass'
       const variables = {
         input: {
           collectionID: collectionId,
-          editionID: item.wearable_id,
+          editionID: item.id.toString(),
           forSale: true,
           limit: 1,
           orderBy: 'price_asc',
         },
       }
-      return request('https://api-v2.ongaia.com/graphql/', gq, variables)
-    })
+      acc.push(request('https://api-v2.ongaia.com/graphql/', gq, variables))
+    }
+    return acc
+  }, [] as Promise<SearchMarketplaceNFTsResponse>[])
+
   const costs: SearchMarketplaceNFTsResponse[] = await Promise.all(costPromises)
 
   // console.log(costs)

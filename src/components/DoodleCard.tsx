@@ -95,8 +95,8 @@ function DoodleCard({ doop }: DoodleCardProps) {
     }, {} as CostMap)
     return data.wearables.map((wearable) => {
       let wearableCost = '0'
-      if (wearable.wearable_id !== undefined && wearable.wearable_id in costMap) {
-        wearableCost = costMap[wearable.wearable_id]
+      if (wearable.id !== undefined && wearable.id in costMap) {
+        wearableCost = costMap[wearable.id.toString()]
       }
       return {
         ...wearable,
@@ -108,7 +108,7 @@ function DoodleCard({ doop }: DoodleCardProps) {
   const isDooplicated = useAppSelector((state: RootState) => {
     const data = state.app.assets[doop.tokenId]
     if (typeof data === 'undefined') return false
-    return data.wearables.filter((wearable) => typeof wearable.wearable_id === 'undefined').length === 0
+    return data.wearables.filter((wearable) => typeof wearable.id === 'undefined').length === 0
   })
 
   function imageLoaded() {
