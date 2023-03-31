@@ -65,9 +65,15 @@ function GenesisBoxCard({ genesisBox }: GenesisBoxParam) {
               <Skeleton height="22px" w="full" isLoaded={!isLoading}>
                 <Text>Genesis Box ID #{genesisBox.tokenId}</Text>
               </Skeleton>
+              {'timeStamp' in genesisBox && genesisBox.timeStamp !== 0 ? (
+                <Skeleton height="22px" isLoaded={!isLoading}>
+                  <Text>{new Date(genesisBox.timeStamp * 1000).toLocaleString()}</Text>
+                </Skeleton>
+              ) : (
+                ''
+              )}
               {'from' in genesisBox && genesisBox.from !== '' ? (
                 <Skeleton height="22px" isLoaded={!isLoading}>
-                  Opener&nbsp;
                   <Link
                     fontWeight="bold"
                     color={palette.ORANGE_100}
