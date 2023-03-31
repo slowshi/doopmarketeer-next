@@ -37,4 +37,24 @@ interface LeaderboardUser {
 type LeaderboardMap = {
   [key: string]: LeaderboardUser
 }
-export type { DecodedInfo, DoopTransactionInfo, DoopResponse, LeaderboardUser, LeaderboardMap }
+
+interface GenesisBoxTransactionInfo {
+  blockNumber: number
+  timeStamp: number
+  from: string
+  hash: string
+  to: string
+  gas: string
+  gasPrice: string
+  cumulativeGasUsed: string
+  tokenId: number
+}
+
+export type {
+  DecodedInfo,
+  DoopTransactionInfo,
+  DoopResponse,
+  LeaderboardUser,
+  LeaderboardMap,
+  GenesisBoxTransactionInfo,
+}
