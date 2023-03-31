@@ -7,9 +7,9 @@ import { useGetGenesisBoxAssetsQuery } from '@/services/api'
 import { useAppSelector } from '@/redux/hooks'
 import { RootState } from '@/redux/appStore'
 import { selectEthPrice } from '@/redux/appSlice'
-import { GenesisBoxTransactionInfo } from '@/interfaces/DoopTransactions'
+import { DoopTransactionInfo } from '@/interfaces/DoopTransactions'
 interface GenesisBoxParam {
-  genesisBox: GenesisBoxTransactionInfo
+  genesisBox: DoopTransactionInfo
 }
 interface CostMap {
   [key: string]: string

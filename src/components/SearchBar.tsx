@@ -60,9 +60,7 @@ function SearchBar({ value, type, onSubmit }: SearchBarParams) {
                     <MenuItem onClick={() => setSearchType(searchTypes.ADDRESS)}>Ethereum Address</MenuItem>
                     <MenuItem onClick={() => setSearchType(searchTypes.DOODLE)}>Doodle ID</MenuItem>
                     <MenuItem onClick={() => setSearchType(searchTypes.DOOPLICATOR)}>Dooplicator ID</MenuItem>
-                    <MenuItem onClick={() => setSearchType(searchTypes.GENESIS_BOX)} isDisabled>
-                      Genesis Box ID
-                    </MenuItem>
+                    <MenuItem onClick={() => setSearchType(searchTypes.GENESIS_BOX)}>Genesis Box ID</MenuItem>
                   </MenuList>
                 </>
               )}

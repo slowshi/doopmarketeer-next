@@ -3,13 +3,13 @@ import { useSelector } from 'react-redux'
 import { currencyMap } from '@/utils/constants'
 import DoodleSpinner from './DoodleSpinner'
 import { useAppSelector } from '@/redux/hooks'
-import { selectTotalDoopCost, selectTotalDooplications } from '@/redux/appSlice'
+import { selectTotalDoopCost, selectTotalDooplications, selectTotalGenesisBoxes } from '@/redux/appSlice'
 import { RootState } from '@/redux/appStore'
-import { Doodle } from '@/interfaces/Doodle'
+import { Doodle, GenesisBox } from '@/interfaces/Doodle'
 import { DoopTransactionInfo } from '@/interfaces/DoopTransactions'
 
 function StatsCard({ loading }: { loading: boolean }) {
-  type UserDoopAsset = { doop: DoopTransactionInfo; asset: Doodle }
+  type UserDoopAsset = { doop: DoopTransactionInfo; asset: Doodle | GenesisBox }
   const getRarity = (state: RootState, dooplicatorId: string): number => {
     let multiple = 1
     if (dooplicatorId !== '') {
@@ -41,15 +41,22 @@ function StatsCard({ loading }: { loading: boolean }) {
   const selectAllUserAssets = (state: RootState): UserDoopAsset[] => {
     const data = state.app.dooplications
     const assets = state.app.assets
+    const boxAssets = state.app.genesisBoxAssets
     const allAssets: UserDoopAsset[] = data.map((doop) => {
-      if (typeof assets[doop.tokenId] === 'undefined')
+      if (assets[doop.tokenId]) {
         return {
-          doop: {} as DoopTransactionInfo,
-          asset: {} as Doodle,
+          doop,
+          asset: assets[doop.tokenId],
         }
+      } else if (boxAssets[doop.tokenId]) {
+        return {
+          doop,
+          asset: boxAssets[doop.tokenId],
+        }
+      }
       return {
-        doop,
-        asset: assets[doop.tokenId],
+        doop: {} as DoopTransactionInfo,
+        asset: {} as Doodle,
       }
     })
     return allAssets
@@ -68,6 +75,7 @@ function StatsCard({ loading }: { loading: boolean }) {
   }
   const costPerWearables = useAppSelector(selectCostPerWearable)
   const totalDoops = useAppSelector(selectTotalDooplications)
+  const totalGenesisBox = useAppSelector(selectTotalGenesisBoxes)
   const totalCost = useAppSelector(selectTotalDoopCost)
   const totalWearables = useAppSelector(selectTotalWearables)
 
@@ -112,8 +120,22 @@ function StatsCard({ loading }: { loading: boolean }) {
             </Box>
             <Box>
               <Stat>
+                <StatLabel>Total Genesis Boxes</StatLabel>
+                <StatNumber>{totalGenesisBox}</StatNumber>
+              </Stat>
+            </Box>
+            <Box>
+              <Stat>
                 <StatLabel>Total Wearables</StatLabel>
                 <StatNumber>{totalWearables}</StatNumber>
+              </Stat>
+            </Box>
+            <Box>
+              <Stat>
+                <StatLabel>Wearables Value</StatLabel>
+                <StatNumber>
+                  {Number(totalWearableValue).toLocaleString(undefined, currencyMap.eth.toLocaleString)} Ξ
+                </StatNumber>
               </Stat>
             </Box>
             <Box>
@@ -126,14 +148,6 @@ function StatsCard({ loading }: { loading: boolean }) {
               <Stat>
                 <StatLabel>Cost Per Wearable</StatLabel>
                 <StatNumber>{`${Math.round((costPerWearables / 10e17) * 10000) / 10000} Ξ`}</StatNumber>
-              </Stat>
-            </Box>
-            <Box>
-              <Stat>
-                <StatLabel>Wearables Value</StatLabel>
-                <StatNumber>
-                  {Number(totalWearableValue).toLocaleString(undefined, currencyMap.eth.toLocaleString)} Ξ
-                </StatNumber>
               </Stat>
             </Box>
           </SimpleGrid>

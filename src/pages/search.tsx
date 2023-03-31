@@ -21,6 +21,7 @@ import {
   resetDooplications,
 } from '@/redux/appSlice'
 import { useAppDispatch, useAppSelector } from '@/redux/hooks'
+import SingleGenesisBox from '@/components/SingleGenesisBox'
 
 export default function Search() {
   const dispatch = useAppDispatch()
@@ -79,6 +80,7 @@ export default function Search() {
               [searchTypes.ADDRESS]: <Dooplications address={searchValue} />,
               [searchTypes.DOODLE]: <SingleDoop tokenId={Number(searchValue)} />,
               [searchTypes.DOOPLICATOR]: <DooplicatorCard tokenId={Number(searchValue)} />,
+              [searchTypes.GENESIS_BOX]: <SingleGenesisBox tokenId={Number(searchValue)} />,
             }[searchType]
           }
         </Stack>

@@ -1,6 +1,6 @@
 import { Doodle, DoodleMetadata, GenesisBox } from '@/interfaces/Doodle'
 import { DoopmarketListing } from '@/interfaces/DoopMarket'
-import { DoopTransactionInfo, GenesisBoxTransactionInfo, LeaderboardUser } from '@/interfaces/DoopTransactions'
+import { DoopTransactionInfo, GenesisBoxHistoryResponse, LeaderboardUser } from '@/interfaces/DoopTransactions'
 import { GemResponse } from '@/interfaces/Gem'
 import { UndoopedDoodle } from '@/interfaces/Undooped'
 import { createApi, fetchBaseQuery, retry } from '@reduxjs/toolkit/query/react'
@@ -48,10 +48,10 @@ export const doopmarketeerApi = createApi({
     getGenesisBoxAssets: builder.query<GenesisBox[], number>({
       query: (tokenId) => `genesis-box/${tokenId}`,
     }),
-    getGenesisBoxHistory: builder.query<GenesisBoxTransactionInfo[], Pagination>({
+    getGenesisBoxHistory: builder.query<GenesisBoxHistoryResponse, Pagination>({
       query: ({ page, limit }) => `genesisBoxHistory?page=${page}&limit=${limit}`,
     }),
-    getGenesisBoxFeed: builder.query<GenesisBoxTransactionInfo[], number>({
+    getGenesisBoxFeed: builder.query<DoopTransactionInfo[], number>({
       query: (startBlock) => `genesisBoxFeed?startBlock=${startBlock}`,
     }),
   }),

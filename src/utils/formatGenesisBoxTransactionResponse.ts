@@ -1,9 +1,9 @@
 import { GenesisBoxTransactionEvent } from '@/interfaces/Etherscan'
 import { BURN_ADDRESS } from './constants'
-import { GenesisBoxTransactionInfo } from '../interfaces/DoopTransactions'
+import { DoopTransactionInfo } from '../interfaces/DoopTransactions'
 export default function formatGenesisBoxTransactionResponse(
   transactions: GenesisBoxTransactionEvent[],
-): GenesisBoxTransactionInfo[] {
+): DoopTransactionInfo[] {
   return transactions
     .filter((transaction: GenesisBoxTransactionEvent) => {
       return transaction.to !== BURN_ADDRESS && transaction.tokenID !== '0'
@@ -17,6 +17,10 @@ export default function formatGenesisBoxTransactionResponse(
         gas: transaction.gas,
         to: transaction.to,
         gasPrice: transaction.gasPrice,
+        value: 0,
+        addressOnTheOtherSide: '',
+        functionName: 'safeTransferFrom',
+        dooplicatorId: '',
         cumulativeGasUsed: transaction.cumulativeGasUsed,
         tokenId: Number(transaction.tokenID),
       }

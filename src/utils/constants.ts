@@ -86,7 +86,32 @@ const dooplicate: AbiItem[] = [
     type: 'function',
   },
 ]
-
+const safeTransfer: AbiItem[] = [
+  {
+    inputs: [
+      { internalType: 'address', name: 'from', type: 'address' },
+      { internalType: 'address', name: 'to', type: 'address' },
+      { internalType: 'uint256', name: 'tokenId', type: 'uint256' },
+      { internalType: 'bytes', name: '_data', type: 'bytes' },
+    ],
+    name: 'safeTransferFrom',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
+]
+const batchOpen: AbiItem[] = [
+  {
+    inputs: [
+      { internalType: 'uint256[]', name: 'tokenIds', type: 'uint256[]' },
+      { internalType: 'bytes8', name: 'addressOnTheOtherSide', type: 'bytes8' },
+    ],
+    name: 'batchOpen',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
+]
 const assumedWearablesMap: AssumedWearablesMap = {
   'blue backpack': [
     {
@@ -265,6 +290,8 @@ type DoopContracts = {
 const doopContracts: DoopContracts = {
   [DOOPMARKET_ADDRESS]: dooplicateItem,
   [DOOPLICATOR_ADDRESS]: dooplicate,
+  [GENESIS_BOX_ADDRESS]: safeTransfer,
+  [GENESIS_BOX_OPENER_ADDRESS]: batchOpen,
 }
 
 const API_URL = 'api'

@@ -2,6 +2,7 @@ interface DecodedInfo {
   tokenId: number
   dooplicatorId: string
   addressOnTheOtherSide: string
+  _data: string
 }
 
 interface DoopTransactionInfo {
@@ -37,17 +38,9 @@ interface LeaderboardUser {
 type LeaderboardMap = {
   [key: string]: LeaderboardUser
 }
-
-interface GenesisBoxTransactionInfo {
-  blockNumber: number
-  timeStamp: number
-  from: string
-  hash: string
-  to: string
-  gas: string
-  gasPrice: string
-  cumulativeGasUsed: string
-  tokenId: number
+interface GenesisBoxHistoryResponse {
+  results: DoopTransactionInfo[]
+  total: number
 }
 
 export type {
@@ -56,5 +49,5 @@ export type {
   DoopResponse,
   LeaderboardUser,
   LeaderboardMap,
-  GenesisBoxTransactionInfo,
+  GenesisBoxHistoryResponse,
 }

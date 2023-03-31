@@ -4,7 +4,7 @@ import { doopmarketeerApi } from '@/services/api'
 import { getCurrencyConversion } from '@/utils/ethersUtils'
 import { DoopmarketListing } from '@/interfaces/DoopMarket'
 import { Doodle, DoodleMetadata, GenesisBox } from '@/interfaces/Doodle'
-import { DoopTransactionInfo, GenesisBoxTransactionInfo, LeaderboardUser } from '@/interfaces/DoopTransactions'
+import { DoopTransactionInfo, LeaderboardUser } from '@/interfaces/DoopTransactions'
 import { searchTypes } from '@/utils/constants'
 import { UndoopedDoodle } from '@/interfaces/Undooped'
 import { GemResponse } from '@/interfaces/Gem'
@@ -25,7 +25,8 @@ interface AppState {
   undoopedDoodles: UndoopedDoodle[]
   undoopedDooplicators: GemResponse[]
   feed: DoopTransactionInfo[]
-  genesisBoxFeed: GenesisBoxTransactionInfo[]
+  genesisBoxFeed: DoopTransactionInfo[]
+  genesisBoxTotal: number
   activeMarketTab: string
   leaderboardSort: string
 }
@@ -46,6 +47,7 @@ const initialState: AppState = {
   undoopedDoodles: [],
   undoopedDooplicators: [],
   genesisBoxFeed: [],
+  genesisBoxTotal: 0,
   feed: [],
   activeMarketTab: '',
   leaderboardSort: 'totalDoops',
@@ -61,17 +63,7 @@ const getUniqueFeed = (feed: DoopTransactionInfo[]): DoopTransactionInfo[] => {
   }, [] as DoopTransactionInfo[])
   return result
 }
-const getUniqueGenesisBoxFeed = (feed: GenesisBoxTransactionInfo[]): GenesisBoxTransactionInfo[] => {
-  const uniqueIds = Array.from(new Set(feed.map((item) => item.tokenId)))
-  const result: GenesisBoxTransactionInfo[] = uniqueIds.reduce((acc, tokenId) => {
-    const item = feed.find((item) => item.tokenId === tokenId)
-    if (item) {
-      acc.push(item)
-    }
-    return acc
-  }, [] as GenesisBoxTransactionInfo[])
-  return result
-}
+
 const getUniqueUndooped = (feed: UndoopedDoodle[]): UndoopedDoodle[] => {
   const uniqueIds = Array.from(new Set(feed.map((item) => item.tokenId)))
   const result: UndoopedDoodle[] = uniqueIds.reduce((acc, tokenId) => {
@@ -192,10 +184,12 @@ export const appSlice = createSlice({
       state.feed = getUniqueFeed([...state.feed, ...action.payload])
     })
     builder.addMatcher(doopmarketeerApi.endpoints.getGenesisBoxFeed.matchFulfilled, (state, action) => {
-      state.genesisBoxFeed = getUniqueGenesisBoxFeed([...action.payload, ...state.genesisBoxFeed])
+      state.genesisBoxFeed = getUniqueFeed([...action.payload, ...state.genesisBoxFeed])
+      state.genesisBoxTotal = state.genesisBoxTotal + action.payload.length
     })
     builder.addMatcher(doopmarketeerApi.endpoints.getGenesisBoxHistory.matchFulfilled, (state, action) => {
-      state.genesisBoxFeed = getUniqueGenesisBoxFeed([...state.genesisBoxFeed, ...action.payload])
+      state.genesisBoxFeed = getUniqueFeed([...state.genesisBoxFeed, ...action.payload.results])
+      state.genesisBoxTotal = action.payload.total
     })
   },
 })
@@ -233,13 +227,17 @@ export const selectEthPrice = (state: RootState) => state.app.ethPrice
 export const selectActiveMarketTab = (state: RootState) => state.app.activeMarketTab
 export const selectTotalDoopmarket = (state: RootState) => state.app.doopMarket.length
 export const selectSearchLoading = (state: RootState) => state.app.searchLoading
-export const selectTotalDooplications = (state: RootState) => state.app.dooplications.length
+export const selectTotalDooplications = (state: RootState) =>
+  state.app.dooplications.filter((doop) => doop.functionName !== 'safeTransferFrom').length
+export const selectTotalGenesisBoxes = (state: RootState) =>
+  state.app.dooplications.filter((doop) => doop.functionName === 'safeTransferFrom').length
 export const selectDoodlesToLoad = (state: RootState) => [...state.app.dooplications.slice(5)]
 export const selectSearchValue = (state: RootState) => state.app.searchValue
 export const selectSearchType = (state: RootState) => state.app.searchType
 export const selectLeaderboardLength = (state: RootState) => state.app.leaderboard.length
 export const selectUndoopedDooplicators = (state: RootState) => state.app.undoopedDooplicators
 export const selectUndoopedDoodles = (state: RootState) => state.app.undoopedDoodles
+export const selectGenesisBoxTotal = (state: RootState) => state.app.genesisBoxTotal
 export const selectLeaderboardTotals = (state: RootState) =>
   state.app.leaderboard.reduce(
     (acc, user) => {

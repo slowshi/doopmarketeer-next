@@ -6,6 +6,7 @@ import { useAppDispatch, useAppSelector } from '@/redux/hooks'
 import { selectDoodlesToLoad, selectSearchLoading, selectTotalDooplications, setSearchLoading } from '@/redux/appSlice'
 import { doopmarketeerApi, useLazyGetUserDoopsQuery } from '@/services/api'
 import { DoopTransactionInfo } from '@/interfaces/DoopTransactions'
+import GenesisBoxCard from './GenesisBoxCard'
 
 function Dooplications({ address }: { address: string }) {
   const dispatch = useAppDispatch()
@@ -69,9 +70,13 @@ function Dooplications({ address }: { address: string }) {
             History
           </Text>
           <Stack w="full" spacing="4">
-            {dooplications.map((doop) => (
-              <DoodleCard key={doop.tokenId} doop={doop}></DoodleCard>
-            ))}
+            {dooplications.map((doop) =>
+              doop.functionName === 'safeTransferFrom' ? (
+                <GenesisBoxCard key={doop.tokenId} genesisBox={doop}></GenesisBoxCard>
+              ) : (
+                <DoodleCard key={doop.tokenId} doop={doop}></DoodleCard>
+              ),
+            )}
             {dooplications.length < totalDooplications ? (
               <Center>
                 <Button colorScheme="whiteAlpha" onClick={loadMore}>
