@@ -1,6 +1,6 @@
-import { Doodle, DoodleMetadata } from '@/interfaces/Doodle'
+import { Doodle, DoodleMetadata, GenesisBox } from '@/interfaces/Doodle'
 import { DoopmarketListing } from '@/interfaces/DoopMarket'
-import { DoopTransactionInfo, LeaderboardUser } from '@/interfaces/DoopTransactions'
+import { DoopTransactionInfo, GenesisBoxTransactionInfo, LeaderboardUser } from '@/interfaces/DoopTransactions'
 import { GemResponse } from '@/interfaces/Gem'
 import { UndoopedDoodle } from '@/interfaces/Undooped'
 import { createApi, fetchBaseQuery, retry } from '@reduxjs/toolkit/query/react'
@@ -45,17 +45,30 @@ export const doopmarketeerApi = createApi({
     getDooplicatiorAssets: builder.query<DoodleMetadata[], number>({
       query: (tokenId) => `dooplicator/${tokenId}`,
     }),
+    getGenesisBoxAssets: builder.query<GenesisBox[], number>({
+      query: (tokenId) => `genesis-box/${tokenId}`,
+    }),
+    getGenesisBoxHistory: builder.query<GenesisBoxTransactionInfo[], Pagination>({
+      query: ({ page, limit }) => `genesisBoxHistory?page=${page}&limit=${limit}`,
+    }),
+    getGenesisBoxFeed: builder.query<GenesisBoxTransactionInfo[], number>({
+      query: (startBlock) => `genesisBoxFeed?startBlock=${startBlock}`,
+    }),
   }),
 })
 
 export const {
   useGetDoopmarketQuery,
   useGetHistoryQuery,
+  useGetGenesisBoxFeedQuery,
+  useGetGenesisBoxHistoryQuery,
   useGetDoodleAssetsQuery,
+  useGetGenesisBoxAssetsQuery,
   useLazyGetUserDoopsQuery,
   useLazyGetDooplicatiorAssetsQuery,
   useLazyGetHistoryQuery,
   useLazyGetFeedQuery,
+  useLazyGetGenesisBoxFeedQuery,
   useGetDooplicatiorAssetsQuery,
   useGetFeedQuery,
   useGetUserDoopsQuery,

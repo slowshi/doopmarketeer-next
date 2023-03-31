@@ -306,6 +306,7 @@ const marketTabs: { [key: string]: string } = {
   DOOPMARKET: 'doopmarket',
   SEARCH: 'search',
   UNDOOPED: 'undooped',
+  GENESIS_BOX_FEED: 'genesisboxfeed',
 }
 
 const palette: { [key: string]: string } = {

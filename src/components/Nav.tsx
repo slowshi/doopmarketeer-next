@@ -47,6 +47,9 @@ function WearbleImage() {
                     <MenuItem as={NextLink} href="/" shallow>
                       Feed
                     </MenuItem>
+                    <MenuItem as={NextLink} href="/genesis-box" shallow>
+                      Genesis Box Feed
+                    </MenuItem>
                     <MenuItem as={NextLink} href="/doopmarket" shallow>
                       DoopMarket
                     </MenuItem>
@@ -112,6 +115,14 @@ function WearbleImage() {
             shallow
           >
             Feed
+          </Button>
+          <Button
+            colorScheme={activeMarketTab === marketTabs.GENESIS_BOX_FEED ? 'blackAlpha' : 'whiteAlpha'}
+            as={NextLink}
+            href="/genesis-box"
+            shallow
+          >
+            Genesis Box Feed
           </Button>
           <Button
             colorScheme={activeMarketTab === marketTabs.DOOPMARKET ? 'blackAlpha' : 'whiteAlpha'}

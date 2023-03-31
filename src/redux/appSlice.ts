@@ -3,8 +3,8 @@ import type { RootState } from './appStore'
 import { doopmarketeerApi } from '@/services/api'
 import { getCurrencyConversion } from '@/utils/ethersUtils'
 import { DoopmarketListing } from '@/interfaces/DoopMarket'
-import { Doodle, DoodleMetadata } from '@/interfaces/Doodle'
-import { DoopTransactionInfo, LeaderboardUser } from '@/interfaces/DoopTransactions'
+import { Doodle, DoodleMetadata, GenesisBox } from '@/interfaces/Doodle'
+import { DoopTransactionInfo, GenesisBoxTransactionInfo, LeaderboardUser } from '@/interfaces/DoopTransactions'
 import { searchTypes } from '@/utils/constants'
 import { UndoopedDoodle } from '@/interfaces/Undooped'
 import { GemResponse } from '@/interfaces/Gem'
@@ -20,10 +20,12 @@ interface AppState {
   doopMarket: DoopmarketListing[]
   assets: Record<string, Doodle>
   dooplicatorAssets: Record<string, DoodleMetadata>
+  genesisBoxAssets: Record<string, GenesisBox>
   leaderboard: LeaderboardUser[]
   undoopedDoodles: UndoopedDoodle[]
   undoopedDooplicators: GemResponse[]
   feed: DoopTransactionInfo[]
+  genesisBoxFeed: GenesisBoxTransactionInfo[]
   activeMarketTab: string
   leaderboardSort: string
 }
@@ -40,8 +42,10 @@ const initialState: AppState = {
   assets: {},
   dooplicatorAssets: {},
   leaderboard: [],
+  genesisBoxAssets: {},
   undoopedDoodles: [],
   undoopedDooplicators: [],
+  genesisBoxFeed: [],
   feed: [],
   activeMarketTab: '',
   leaderboardSort: 'totalDoops',
@@ -55,6 +59,17 @@ const getUniqueFeed = (feed: DoopTransactionInfo[]): DoopTransactionInfo[] => {
     }
     return acc
   }, [] as DoopTransactionInfo[])
+  return result
+}
+const getUniqueGenesisBoxFeed = (feed: GenesisBoxTransactionInfo[]): GenesisBoxTransactionInfo[] => {
+  const uniqueIds = Array.from(new Set(feed.map((item) => item.tokenId)))
+  const result: GenesisBoxTransactionInfo[] = uniqueIds.reduce((acc, tokenId) => {
+    const item = feed.find((item) => item.tokenId === tokenId)
+    if (item) {
+      acc.push(item)
+    }
+    return acc
+  }, [] as GenesisBoxTransactionInfo[])
   return result
 }
 const getUniqueUndooped = (feed: UndoopedDoodle[]): UndoopedDoodle[] => {
@@ -151,6 +166,13 @@ export const appSlice = createSlice({
         [tokenId]: action.payload,
       }
     })
+    builder.addMatcher(doopmarketeerApi.endpoints.getGenesisBoxAssets.matchFulfilled, (state, action) => {
+      const tokenId = action.meta.arg.originalArgs
+      state.genesisBoxAssets = {
+        ...state.genesisBoxAssets,
+        [tokenId]: action.payload,
+      }
+    })
     builder.addMatcher(doopmarketeerApi.endpoints.getUserDoops.matchFulfilled, (state, action) => {
       state.dooplications = action.payload
     })
@@ -169,6 +191,12 @@ export const appSlice = createSlice({
     builder.addMatcher(doopmarketeerApi.endpoints.getHistory.matchFulfilled, (state, action) => {
       state.feed = getUniqueFeed([...state.feed, ...action.payload])
     })
+    builder.addMatcher(doopmarketeerApi.endpoints.getGenesisBoxFeed.matchFulfilled, (state, action) => {
+      state.genesisBoxFeed = getUniqueGenesisBoxFeed([...action.payload, ...state.genesisBoxFeed])
+    })
+    builder.addMatcher(doopmarketeerApi.endpoints.getGenesisBoxHistory.matchFulfilled, (state, action) => {
+      state.genesisBoxFeed = getUniqueGenesisBoxFeed([...state.genesisBoxFeed, ...action.payload])
+    })
   },
 })
 
@@ -186,10 +214,18 @@ export const {
 } = appSlice.actions
 
 export const selectFeed = (state: RootState) => state.app.feed
+export const selectGenesisBoxFeed = (state: RootState) => state.app.genesisBoxFeed
 export const selectLatestBlockNumber = (state: RootState) => {
   let blockNumber = 0
   if (state.app.feed.length > 0) {
     blockNumber = state.app.feed[0].blockNumber
+  }
+  return blockNumber
+}
+export const selectLastGenesisBoxBlockNumber = (state: RootState) => {
+  let blockNumber = 0
+  if (state.app.genesisBoxFeed.length > 0) {
+    blockNumber = state.app.genesisBoxFeed[0].blockNumber
   }
   return blockNumber
 }

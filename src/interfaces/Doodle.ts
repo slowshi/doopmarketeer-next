@@ -16,7 +16,10 @@ interface Wearable {
   set?: string
   hidden?: boolean
   position?: string
-  plurality?: boolean
+  set_type?: string
+  body_position?: string
+  layer?: string
+  plurality?: string
   ipfs_hash_svg?: string
   cost?: string | number
   image_uri: string
@@ -24,6 +27,15 @@ interface Wearable {
 interface DooplicatorWearables {
   wearables: Wearable[]
 }
+
+interface GenesisBoxMetadata {
+  data: {
+    opened: boolean
+    message: string
+    wearables: Wearable[]
+  }
+}
+
 interface WearableCost {
   editionID: string
   name: string
@@ -51,6 +63,10 @@ type AssumedWearableInfo = {
 type AssumedWearablesMap = {
   [key: string]: AssumedWearableInfo[]
 }
+interface GenesisBox {
+  wearables: Wearable[]
+  costs: WearableCost[]
+}
 export type {
   DoodleAttribute,
   DoodleMetadata,
@@ -60,4 +76,6 @@ export type {
   Doodle,
   AssumedWearableInfo,
   AssumedWearablesMap,
+  GenesisBox,
+  GenesisBoxMetadata,
 }
