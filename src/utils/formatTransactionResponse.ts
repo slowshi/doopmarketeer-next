@@ -6,15 +6,17 @@ export default function formatTransactionResponse(transactions: Transaction[]): 
   Decoder.addABI(doopContracts[DOOPMARKET_ADDRESS])
   Decoder.addABI(doopContracts[DOOPLICATOR_ADDRESS])
   Decoder.addABI(doopContracts[GENESIS_BOX_ADDRESS])
-
+  const boxTransaction = (transaction: Transaction) =>
+    transaction.isError === '0' &&
+    transaction.to === GENESIS_BOX_ADDRESS &&
+    transaction.functionName.substring(0, 16) === 'safeTransferFrom'
+  const doopTransaction = (transaction: Transaction) =>
+    transaction.isError === '0' &&
+    [DOOPMARKET_ADDRESS, DOOPLICATOR_ADDRESS].indexOf(transaction.to) > -1 &&
+    transaction.functionName.substring(0, 10) === 'dooplicate'
   return transactions
     .filter((transaction: Transaction) => {
-      return (
-        (transaction.isError === '0' &&
-          [DOOPMARKET_ADDRESS, DOOPLICATOR_ADDRESS].indexOf(transaction.to) > -1 &&
-          transaction.functionName.substring(0, 10) === 'dooplicate') ||
-        (transaction.to === GENESIS_BOX_ADDRESS && transaction.functionName.substring(0, 16) === 'safeTransferFrom')
-      )
+      return doopTransaction(transaction) || boxTransaction(transaction)
     })
     .map((transaction) => {
       const decodedData = Decoder.decodeData(transaction.input)
