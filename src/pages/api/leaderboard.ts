@@ -32,8 +32,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
   const doopResults: Transaction[] = doopResponse.result
   const marketResults: Transaction[] = marketResponse.result
   const transactions: DoopTransactionInfo[] = formatTransactionResponse([...doopResults, ...marketResults])
-
-  const leaderboard: LeaderboardMap = [...transactions].reduce((acc: LeaderboardMap, item: DoopTransactionInfo) => {
+  const reduceTransactions = (acc: LeaderboardMap, item: DoopTransactionInfo) => {
     let user: LeaderboardUser = {
       timeStamp: 0,
       address: '',
@@ -71,6 +70,26 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
       [item.from]: user,
     }
     return acc
-  }, {} as LeaderboardMap)
+  }
+  const leaderboard: LeaderboardMap = [...transactions].reduce(reduceTransactions, {} as LeaderboardMap)
+  const boxLeaderboard: LeaderboardMap = [...genesisBoxTransactions].reduce(reduceTransactions, {} as LeaderboardMap)
+  // const totalLeaderboard = Object.keys(boxLeaderboard).reduce((acc: LeaderboardMap, item) => {
+  //   // console.log(typeof item)
+  //   if (typeof leaderboard[item] === 'undefined') {
+  //     acc = {
+  //       ...acc,
+  //       [item]: { ...boxLeaderboard[item] },
+  //     }
+  //   } else {
+  //     acc = {
+  //       ...acc,
+  //       [item]: {
+  //         ...boxLeaderboard[item],
+  //         ...leaderboard[item],
+  //       },
+  //     }
+  //   }
+  //   return acc
+  // }, {} as LeaderboardMap)
   res.status(200).json(Object.values(leaderboard))
 }
