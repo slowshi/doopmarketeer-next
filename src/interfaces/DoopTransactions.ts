@@ -31,6 +31,7 @@ interface LeaderboardUser {
   address: string
   dooplicate: number
   dooplicateItem: number
+  genesisBox: number
   value: number
   totalDoops?: number
   shortAddress?: string

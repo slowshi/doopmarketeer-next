@@ -33,7 +33,7 @@ import { LeaderboardUser } from '@/interfaces/DoopTransactions'
 export default function Leaderbaord() {
   const dispatch = useAppDispatch()
   const { isLoading } = useGetLeaderboardQuery()
-  const totalDoopers = useAppSelector(selectLeaderboardLength)
+  // const totalDoopers = useAppSelector(selectLeaderboardLength)
   const totals = useAppSelector(selectLeaderboardTotals)
   const leaderboard = useAppSelector(selectLeaderboard)
 
@@ -63,10 +63,10 @@ export default function Leaderbaord() {
             <Stack w="full">
               <Card w="full">
                 <CardBody>
-                  <SimpleGrid columns={[2, null, 5]} spacing="2">
+                  <SimpleGrid columns={[2, null, 4]} spacing="2">
                     <Stat>
                       <StatLabel>Total Doopers</StatLabel>
-                      <StatNumber>{totalDoopers}</StatNumber>
+                      <StatNumber>{totals.doopers}</StatNumber>
                     </Stat>
                     <Stat>
                       <StatLabel>Total Doops</StatLabel>
@@ -83,6 +83,14 @@ export default function Leaderbaord() {
                     <Stat>
                       <StatLabel>Volume</StatLabel>
                       <StatNumber>{`${Math.round((totals.volume / 10e17) * 100) / 100} Ξ`}</StatNumber>
+                    </Stat>
+                    <Stat>
+                      <StatLabel>Total Openers</StatLabel>
+                      <StatNumber>{totals.openers}</StatNumber>
+                    </Stat>
+                    <Stat>
+                      <StatLabel>Genesis Box</StatLabel>
+                      <StatNumber>{totals.box}</StatNumber>
                     </Stat>
                   </SimpleGrid>
                 </CardBody>
@@ -111,6 +119,15 @@ export default function Leaderbaord() {
                         onClick={() => dispatch(setSortLeaderboard('dooplicateItem'))}
                       >
                         Market
+                      </Link>
+                      <Link
+                        fontWeight="bold"
+                        color={palette.ORANGE_100}
+                        fontSize={fontSize}
+                        flex="1"
+                        onClick={() => dispatch(setSortLeaderboard('genesisBox'))}
+                      >
+                        Box
                       </Link>
                       <Link
                         fontWeight="bold"
@@ -148,6 +165,9 @@ export default function Leaderbaord() {
                         </Text>
                         <Text fontSize={fontSize} flex="1">
                           {user.dooplicateItem}
+                        </Text>
+                        <Text fontSize={fontSize} flex="1">
+                          {user.genesisBox}
                         </Text>
                         <Text fontSize={fontSize} flex="1">
                           {user.totalDoops}

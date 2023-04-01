@@ -234,21 +234,24 @@ export const selectTotalGenesisBoxes = (state: RootState) =>
 export const selectDoodlesToLoad = (state: RootState) => [...state.app.dooplications.slice(5)]
 export const selectSearchValue = (state: RootState) => state.app.searchValue
 export const selectSearchType = (state: RootState) => state.app.searchType
-export const selectLeaderboardLength = (state: RootState) => state.app.leaderboard.length
 export const selectUndoopedDooplicators = (state: RootState) => state.app.undoopedDooplicators
 export const selectUndoopedDoodles = (state: RootState) => state.app.undoopedDoodles
 export const selectGenesisBoxTotal = (state: RootState) => state.app.genesisBoxTotal
+export const selectLeaderboardLength = (state: RootState) => state.app.leaderboard.length
 export const selectLeaderboardTotals = (state: RootState) =>
   state.app.leaderboard.reduce(
     (acc, user) => {
       return {
+        doopers: user.dooplicate > 0 || user.dooplicateItem ? acc.doopers + 1 : acc.doopers,
+        openers: user.genesisBox > 0 ? acc.openers + 1 : acc.openers,
         all: acc.all + user.dooplicate + user.dooplicateItem,
         dooplicator: acc.dooplicator + user.dooplicate,
         market: acc.market + user.dooplicateItem,
+        box: acc.box + user.genesisBox,
         volume: acc.volume + user.value,
       }
     },
-    { all: 0, dooplicator: 0, market: 0, volume: 0 },
+    { doopers: 0, openers: 0, all: 0, dooplicator: 0, market: 0, volume: 0, box: 0 },
   )
 export const selectLeaderboard = (state: RootState) => {
   const leaderboardSort: string = state.app.leaderboardSort

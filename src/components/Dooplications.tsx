@@ -31,10 +31,14 @@ function Dooplications({ address }: { address: string }) {
 
   async function batchPromise(items: DoopTransactionInfo[], batchSize: number) {
     const fetchAssets = async (doop: DoopTransactionInfo) => {
-      await dispatch(doopmarketeerApi.endpoints.getDoodleAssets.initiate(doop.tokenId))
-      const doopId = doop.dooplicatorId
-      if (doopId !== '' && typeof doopId !== 'undefined') {
-        await dispatch(doopmarketeerApi.endpoints.getDooplicatiorAssets.initiate(Number(doopId)))
+      if (doop.functionName === 'safeTransferFrom') {
+        await dispatch(doopmarketeerApi.endpoints.getGenesisBoxAssets.initiate(doop.tokenId))
+      } else {
+        await dispatch(doopmarketeerApi.endpoints.getDoodleAssets.initiate(doop.tokenId))
+        const doopId = doop.dooplicatorId
+        if (doopId !== '' && typeof doopId !== 'undefined') {
+          await dispatch(doopmarketeerApi.endpoints.getDooplicatiorAssets.initiate(Number(doopId)))
+        }
       }
     }
     for (let i = 0; i < items.length; i += batchSize) {
