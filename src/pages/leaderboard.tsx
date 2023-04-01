@@ -12,6 +12,7 @@ import {
   StatLabel,
   StatNumber,
   useBreakpointValue,
+  StatHelpText,
 } from '@chakra-ui/react'
 import { useEffect } from 'react'
 import { marketTabs, palette } from '@/utils/constants'
@@ -67,10 +68,50 @@ export default function Leaderbaord() {
                     <Stat>
                       <StatLabel>Total Doopers</StatLabel>
                       <StatNumber>{totals.doopers}</StatNumber>
+                      <StatHelpText>
+                        Unique {totals.onlyOpeners} |{' '}
+                        {Number(totals.onlyDoopers / totals.doopers).toLocaleString(undefined, {
+                          style: 'percent',
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                        })}
+                      </StatHelpText>
                     </Stat>
                     <Stat>
                       <StatLabel>Total Doops</StatLabel>
                       <StatNumber>{totals.all}</StatNumber>
+                      <StatHelpText>
+                        Progress{' '}
+                        {Number(totals.all / 9375).toLocaleString(undefined, {
+                          style: 'percent',
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                        })}
+                      </StatHelpText>
+                    </Stat>
+                    <Stat>
+                      <StatLabel>Total Openers</StatLabel>
+                      <StatNumber>{totals.openers}</StatNumber>
+                      <StatHelpText>
+                        Unique {totals.onlyOpeners} |{' '}
+                        {Number(totals.onlyOpeners / totals.openers).toLocaleString(undefined, {
+                          style: 'percent',
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                        })}
+                      </StatHelpText>
+                    </Stat>
+                    <Stat>
+                      <StatLabel>Genesis Box</StatLabel>
+                      <StatNumber>{totals.box}</StatNumber>
+                      <StatHelpText>
+                        Progress{' '}
+                        {Number(totals.box / 24000).toLocaleString(undefined, {
+                          style: 'percent',
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                        })}
+                      </StatHelpText>
                     </Stat>
                     <Stat>
                       <StatLabel>Dooplicator</StatLabel>
@@ -83,14 +124,6 @@ export default function Leaderbaord() {
                     <Stat>
                       <StatLabel>Volume</StatLabel>
                       <StatNumber>{`${Math.round((totals.volume / 10e17) * 100) / 100} Ξ`}</StatNumber>
-                    </Stat>
-                    <Stat>
-                      <StatLabel>Total Openers</StatLabel>
-                      <StatNumber>{totals.openers}</StatNumber>
-                    </Stat>
-                    <Stat>
-                      <StatLabel>Genesis Box</StatLabel>
-                      <StatNumber>{totals.box}</StatNumber>
                     </Stat>
                   </SimpleGrid>
                 </CardBody>

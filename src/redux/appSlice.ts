@@ -243,7 +243,15 @@ export const selectLeaderboardTotals = (state: RootState) =>
   state.app.leaderboard.reduce(
     (acc, user) => {
       return {
-        doopers: user.dooplicate > 0 || user.dooplicateItem ? acc.doopers + 1 : acc.doopers,
+        onlyDoopers:
+          (user.dooplicate > 0 || user.dooplicateItem > 0) && user.genesisBox === 0
+            ? acc.onlyDoopers + 1
+            : acc.onlyDoopers,
+        onlyOpeners:
+          user.dooplicate === 0 && user.dooplicateItem === 0 && user.genesisBox > 0
+            ? acc.onlyOpeners + 1
+            : acc.onlyOpeners,
+        doopers: user.dooplicate > 0 || user.dooplicateItem > 0 ? acc.doopers + 1 : acc.doopers,
         openers: user.genesisBox > 0 ? acc.openers + 1 : acc.openers,
         all: acc.all + user.dooplicate + user.dooplicateItem,
         dooplicator: acc.dooplicator + user.dooplicate,
@@ -252,7 +260,7 @@ export const selectLeaderboardTotals = (state: RootState) =>
         volume: acc.volume + user.value,
       }
     },
-    { doopers: 0, openers: 0, all: 0, dooplicator: 0, market: 0, volume: 0, box: 0 },
+    { onlyDoopers: 0, onlyOpeners: 0, doopers: 0, openers: 0, all: 0, dooplicator: 0, market: 0, volume: 0, box: 0 },
   )
 export const selectLeaderboard = (state: RootState) => {
   const leaderboardSort: string = state.app.leaderboardSort
