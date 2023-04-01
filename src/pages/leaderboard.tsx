@@ -102,7 +102,7 @@ export default function Leaderbaord() {
                       </StatHelpText>
                     </Stat>
                     <Stat>
-                      <StatLabel>Genesis Box</StatLabel>
+                      <StatLabel>Total Box</StatLabel>
                       <StatNumber>{totals.box}</StatNumber>
                       <StatHelpText>
                         Progress{' '}
