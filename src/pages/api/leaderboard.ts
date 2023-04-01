@@ -25,15 +25,15 @@ const getBoxTransactions = async (): Promise<DoopTransactionInfo[]> => {
   return transactions
 }
 export default async function handler(req: NextApiRequest, res: NextApiResponse<LeaderboardUser[]>) {
-  const doopResponse = await contractTransactions(DOOPLICATOR_ADDRESS)
-  const marketResponse = await contractTransactions(DOOPMARKET_ADDRESS)
   const genesisBoxTransactions = await getBoxTransactions()
 
+  const doopResponse = await contractTransactions(DOOPLICATOR_ADDRESS)
+  const marketResponse = await contractTransactions(DOOPMARKET_ADDRESS)
   const doopResults: Transaction[] = doopResponse.result
   const marketResults: Transaction[] = marketResponse.result
   const transactions: DoopTransactionInfo[] = formatTransactionResponse([...doopResults, ...marketResults])
 
-  const leaderboard: LeaderboardMap = [...genesisBoxTransactions, ...transactions].reduce(
+  const leaderboard: LeaderboardMap = [...transactions, ...genesisBoxTransactions].reduce(
     (acc: LeaderboardMap, item: DoopTransactionInfo) => {
       let user: LeaderboardUser = {
         timeStamp: 0,

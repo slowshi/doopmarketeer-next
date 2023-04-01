@@ -69,7 +69,7 @@ export default function Leaderbaord() {
                       <StatLabel>Total Doopers</StatLabel>
                       <StatNumber>{totals.doopers}</StatNumber>
                       <StatHelpText>
-                        Unique {totals.onlyOpeners} |{' '}
+                        Unique {totals.onlyDoopers} |{' '}
                         {Number(totals.onlyDoopers / totals.doopers).toLocaleString(undefined, {
                           style: 'percent',
                           minimumFractionDigits: 2,
@@ -102,7 +102,7 @@ export default function Leaderbaord() {
                       </StatHelpText>
                     </Stat>
                     <Stat>
-                      <StatLabel>Total Box</StatLabel>
+                      <StatLabel>Total Boxes</StatLabel>
                       <StatNumber>{totals.box}</StatNumber>
                       <StatHelpText>
                         Progress{' '}
