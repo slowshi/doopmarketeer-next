@@ -125,18 +125,18 @@ export default function Leaderbaord() {
                         color={palette.ORANGE_100}
                         fontSize={fontSize}
                         flex="1"
-                        onClick={() => dispatch(setSortLeaderboard('genesisBox'))}
+                        onClick={() => dispatch(setSortLeaderboard('totalDoops'))}
                       >
-                        Box
+                        Total
                       </Link>
                       <Link
                         fontWeight="bold"
                         color={palette.ORANGE_100}
                         fontSize={fontSize}
                         flex="1"
-                        onClick={() => dispatch(setSortLeaderboard('totalDoops'))}
+                        onClick={() => dispatch(setSortLeaderboard('genesisBox'))}
                       >
-                        Total
+                        Box
                       </Link>
                       <Link
                         fontWeight="bold"
@@ -167,10 +167,10 @@ export default function Leaderbaord() {
                           {user.dooplicateItem}
                         </Text>
                         <Text fontSize={fontSize} flex="1">
-                          {user.genesisBox}
+                          {user.totalDoops}
                         </Text>
                         <Text fontSize={fontSize} flex="1">
-                          {user.totalDoops}
+                          {user.genesisBox}
                         </Text>
                         <Text fontSize={fontSize} flex="1">{`${Math.round((user.value / 10e17) * 100) / 100} Ξ`}</Text>
                       </Box>
