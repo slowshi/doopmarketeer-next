@@ -6,19 +6,34 @@ import { GenesisBoxTransactionEvent, Transaction } from '@/interfaces/Etherscan'
 import { DoopTransactionInfo, LeaderboardMap, LeaderboardUser } from '@/interfaces/DoopTransactions'
 import formatGenesisBoxTransactionResponse from '@/utils/formatGenesisBoxTransactionResponse'
 import formatTransactionResponse from '@/utils/formatTransactionResponse'
+const getBoxTransactions = async (): Promise<DoopTransactionInfo[]> => {
+  let allResults: GenesisBoxTransactionEvent[] = []
+  let newResults: GenesisBoxTransactionEvent[] = []
+  let page = 1
+  while (newResults.length > 0 || page === 1) {
+    const res = await contractInternalTransactions(GENESIS_BOX_OPENER_ADDRESS, page, 5000)
+    if (Array.isArray(res.result)) {
+      newResults = res.result
+      allResults = [...allResults, ...newResults]
+    } else {
+      newResults = []
+    }
+    page++
+  }
+  const transactions: DoopTransactionInfo[] = formatGenesisBoxTransactionResponse(allResults)
 
+  return transactions
+}
 export default async function handler(req: NextApiRequest, res: NextApiResponse<LeaderboardUser[]>) {
   const doopResponse = await contractTransactions(DOOPLICATOR_ADDRESS)
   const marketResponse = await contractTransactions(DOOPMARKET_ADDRESS)
-  const genBoxOpenerResponse = await contractInternalTransactions(GENESIS_BOX_OPENER_ADDRESS)
-  const genBoxResults: GenesisBoxTransactionEvent[] = genBoxOpenerResponse.result
-  const genesisBoxTransactions: DoopTransactionInfo[] = formatGenesisBoxTransactionResponse(genBoxResults)
+  const genesisBoxTransactions = await getBoxTransactions()
 
   const doopResults: Transaction[] = doopResponse.result
   const marketResults: Transaction[] = marketResponse.result
   const transactions: DoopTransactionInfo[] = formatTransactionResponse([...doopResults, ...marketResults])
 
-  const leaderboard: LeaderboardMap = [...transactions, ...genesisBoxTransactions].reduce(
+  const leaderboard: LeaderboardMap = [...genesisBoxTransactions, ...transactions].reduce(
     (acc: LeaderboardMap, item: DoopTransactionInfo) => {
       let user: LeaderboardUser = {
         timeStamp: 0,
