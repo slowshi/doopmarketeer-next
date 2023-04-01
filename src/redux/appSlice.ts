@@ -227,6 +227,7 @@ export const selectEthPrice = (state: RootState) => state.app.ethPrice
 export const selectActiveMarketTab = (state: RootState) => state.app.activeMarketTab
 export const selectTotalDoopmarket = (state: RootState) => state.app.doopMarket.length
 export const selectSearchLoading = (state: RootState) => state.app.searchLoading
+export const selectDoopAndBoxTotals = (state: RootState) => state.app.dooplications.length
 export const selectTotalDooplications = (state: RootState) =>
   state.app.dooplications.filter((doop) => doop.functionName !== 'safeTransferFrom').length
 export const selectTotalGenesisBoxes = (state: RootState) =>

@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react'
 import DoodleCard from './DoodleCard'
 import StatsCard from './StatsCard'
 import { useAppDispatch, useAppSelector } from '@/redux/hooks'
-import { selectDoodlesToLoad, selectSearchLoading, selectTotalDooplications, setSearchLoading } from '@/redux/appSlice'
+import { selectDoodlesToLoad, selectDoopAndBoxTotals, selectSearchLoading, setSearchLoading } from '@/redux/appSlice'
 import { doopmarketeerApi, useLazyGetUserDoopsQuery } from '@/services/api'
 import { DoopTransactionInfo } from '@/interfaces/DoopTransactions'
 import GenesisBoxCard from './GenesisBoxCard'
@@ -19,7 +19,7 @@ function Dooplications({ address }: { address: string }) {
     return state.app.dooplications.slice(0, page * 5)
   })
 
-  const totalDooplications = useAppSelector(selectTotalDooplications)
+  const totalDooplications = useAppSelector(selectDoopAndBoxTotals)
 
   const loadMore = async () => {
     setPage(page + 1)
