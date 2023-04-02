@@ -71,24 +71,26 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
     }
     return acc
   }
-  const leaderboard: LeaderboardMap = [...transactions].reduce(reduceTransactions, {} as LeaderboardMap)
-  const boxLeaderboard: LeaderboardMap = [...genesisBoxTransactions].reduce(reduceTransactions, {} as LeaderboardMap)
-  const totalLeaderboard = Object.keys(boxLeaderboard).reduce((acc: LeaderboardMap, item: string) => {
-    if (typeof leaderboard[item] === 'undefined') {
-      acc = {
-        ...acc,
-        [item]: { ...boxLeaderboard[item] },
-      }
-    } else {
-      acc = {
-        ...acc,
-        [item]: {
-          ...boxLeaderboard[item],
-          ...leaderboard[item],
-        },
-      }
-    }
-    return acc
-  }, {} as LeaderboardMap)
-  res.status(200).json(Object.values(totalLeaderboard))
+  const leaderboard: LeaderboardMap = transactions
+    .concat(genesisBoxTransactions)
+    .reduce(reduceTransactions, {} as LeaderboardMap)
+  // const boxLeaderboard: LeaderboardMap = [...genesisBoxTransactions].reduce(reduceTransactions, {} as LeaderboardMap)
+  // const totalLeaderboard = Object.keys(boxLeaderboard).reduce((acc: LeaderboardMap, item: string) => {
+  //   if (typeof leaderboard[item] === 'undefined') {
+  //     acc = {
+  //       ...acc,
+  //       [item]: { ...boxLeaderboard[item] },
+  //     }
+  //   } else {
+  //     acc = {
+  //       ...acc,
+  //       [item]: {
+  //         ...leaderboard[item],
+  //         genesisBox: boxLeaderboard[item].genesisBox,
+  //       },
+  //     }
+  //   }
+  //   return acc
+  // }, {} as LeaderboardMap)
+  res.status(200).json(Object.values(leaderboard))
 }
