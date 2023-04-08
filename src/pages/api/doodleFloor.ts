@@ -4,6 +4,7 @@ import { UndoopedDoodle } from '@/interfaces/Undooped'
 import { Wearable, DooplicatorWearables } from '@/interfaces/Doodle'
 import { DOOPLICATOR_WEARABLES_URL } from '@/utils/constants'
 import fetchGetWithRetry from '@/utils/fetchGetWithRetry'
+import { OSResponse } from '@/interfaces/OSPro'
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse<UndoopedDoodle[]>) {
   const limit: number = Number(req.query['limit']) || 20
@@ -12,20 +13,21 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
     page = 1
   }
 
-  const filters = {
-    slug: 'doodles-official',
-  }
-  const response = await getGemAssets(filters, page, limit)
+  const response = (await fetchGetWithRetry(
+    `https://api.pro.opensea.io/collections/doodles-official/assets?offset=${
+      (page - 1) * limit
+    }&limit=20&sort%5BcurrentEthPrice%5D=asc&status%5B%5D=buy_now`,
+  )) as OSResponse
+
   let undooped: UndoopedDoodle[] = []
-  for (let i = 0; i < response.length; i++) {
-    const { tokenId, marketUrl, currentBasePrice, supportsWyvern } = response[i]
-    const wearablesResponse = (await fetchGetWithRetry(
-      `${DOOPLICATOR_WEARABLES_URL}/${tokenId}`,
-    )) as DooplicatorWearables
+  const data = response.data
+  for (let i = 0; i < data.length; i++) {
+    const { id, imageUrl, currentBasePrice, supportsWyvern } = data[i]
+    const wearablesResponse = (await fetchGetWithRetry(`${DOOPLICATOR_WEARABLES_URL}/${id}`)) as DooplicatorWearables
     const isDooplicated =
       wearablesResponse.wearables.filter((wearable: Wearable) => typeof wearable.id === 'undefined').length === 0
     if (!isDooplicated) {
-      undooped = [...undooped, { tokenId, marketUrl, currentBasePrice, supportsWyvern }]
+      undooped = [...undooped, { tokenId: Number(id), marketUrl: imageUrl, currentBasePrice, supportsWyvern }]
     }
   }
   res.status(200).json(undooped)

@@ -115,155 +115,155 @@ const batchOpen: AbiItem[] = [
 const assumedWearablesMap: AssumedWearablesMap = {
   'blue backpack': [
     {
-      wearable_id: '141',
+      id: 141,
       image_uri: 'https://d1zu9f2anwwksd.cloudfront.net/Qmcw4oUMcarsbJUxPUeX2Ye4Tg8ir51fFHPU8xAefEmQRS.svg',
     },
     {
-      wearable_id: '142',
+      id: 142,
       image_uri: 'https://d1zu9f2anwwksd.cloudfront.net/QmZM8n38utE2kpRZ8zeRfxFwE1Z5c7qsndZhnmQANhKVav.svg',
     },
   ],
   'yellow backpack': [
     {
-      wearable_id: '143',
+      id: 143,
       image_uri: 'https://d1zu9f2anwwksd.cloudfront.net/QmNgpvNLKh3VWBrvi741NdEbVoMt4q8NYCbbNE5X4kJDbA.svg',
     },
     {
-      wearable_id: '144',
+      id: 144,
       image_uri: 'https://d1zu9f2anwwksd.cloudfront.net/QmdwUWZf7sVeaUu2UfsjQkhQ5HhdWJevLoReCCAYNsvqx2.svg',
     },
   ],
   'pink backpack': [
     {
-      wearable_id: '145',
+      id: 145,
       image_uri: 'https://d1zu9f2anwwksd.cloudfront.net/QmcFWt8iqcGuugxVWBDHDnPf3ukeKGCLJCCDh8V8dMgWD4.svg',
     },
     {
-      wearable_id: '146',
+      id: 146,
       image_uri: 'https://d1zu9f2anwwksd.cloudfront.net/QmQvBxq2wzr2aga1qB99J9MRVEkwKagqmQinUzf8kCNbaD.svg',
     },
   ],
   'purple sweater with satchel': [
     {
-      wearable_id: '150',
+      id: 150,
       image_uri: 'https://d1zu9f2anwwksd.cloudfront.net/QmaknaftP86RwTHSmMx35pyfVdVxA7GKnY4TKHpu8GYzEP.svg',
     },
     {
-      wearable_id: '151',
+      id: 151,
       image_uri: 'https://d1zu9f2anwwksd.cloudfront.net/QmdAHcNXJLJnv8e4J7iiwNtgHkjGpf8qp94MKWNtWrjkvD.svg',
     },
   ],
   'pink sweater with satchel': [
     {
-      wearable_id: '152',
+      id: 152,
       image_uri: 'https://d1zu9f2anwwksd.cloudfront.net/QmXiK8x3w6pJvL34V9snUMdNSEEzhwcDvzguHJbXcBBnQd.svg',
     },
     {
-      wearable_id: '153',
+      id: 153,
       image_uri: 'https://d1zu9f2anwwksd.cloudfront.net/QmTbowsKDSmjWEawszrcwWuxaPW8TMBpbfxvFzBTixqhW2.svg',
     },
   ],
   'holographic beard': [
     {
-      wearable_id: '61',
+      id: 61,
       image_uri: 'https://d1zu9f2anwwksd.cloudfront.net/Qmcgyb43SopvWd8z112QP1PTaP8qUvX7B1pXNZ98c9GNMg.svg',
     },
   ],
   'holographic bob': [
     {
-      wearable_id: '61',
+      id: 61,
       image_uri: 'https://d1zu9f2anwwksd.cloudfront.net/Qmcgyb43SopvWd8z112QP1PTaP8qUvX7B1pXNZ98c9GNMg.svg',
     },
   ],
   'holographic afro': [
     {
-      wearable_id: '61',
+      id: 61,
       image_uri: 'https://d1zu9f2anwwksd.cloudfront.net/Qmcgyb43SopvWd8z112QP1PTaP8qUvX7B1pXNZ98c9GNMg.svg',
     },
   ],
   'crown with holographic long': [
     {
-      wearable_id: '61',
+      id: 61,
       image_uri: 'https://d1zu9f2anwwksd.cloudfront.net/Qmcgyb43SopvWd8z112QP1PTaP8qUvX7B1pXNZ98c9GNMg.svg',
     },
   ],
   'green blazer': [
     {
-      wearable_id: '147',
+      id: 147,
       image_uri: 'https://d1zu9f2anwwksd.cloudfront.net/QmbuXX5UmrzaVZSfdk9sVdXNpMHSyfiqQUdYVBukQtUDTb.svg',
     },
     {
-      wearable_id: '149',
+      id: 149,
       image_uri: 'https://d1zu9f2anwwksd.cloudfront.net/QmWhoP4LF4dthcfcebumLchZRdrGQ271gSPMvhvt1XcYdb.svg',
     },
   ],
   'blue blazer': [
     {
-      wearable_id: '147',
+      id: 147,
       image_uri: 'https://d1zu9f2anwwksd.cloudfront.net/QmbuXX5UmrzaVZSfdk9sVdXNpMHSyfiqQUdYVBukQtUDTb.svg',
     },
     {
-      wearable_id: '148',
+      id: 148,
       image_uri: 'https://d1zu9f2anwwksd.cloudfront.net/QmbpUyYGtkvQArDfXr4q3oiNusND1w3ZtMbUfnHg9Vmz1E.svg',
     },
   ],
   'purple chain': [
     {
-      wearable_id: '154',
+      id: 154,
       image_uri: 'https://d1zu9f2anwwksd.cloudfront.net/QmQeHtyC2oM7cdxhgRNG3WZZmCPxV6EmaZwyewjKQJRmTW.svg',
     },
     {
-      wearable_id: '155',
+      id: 155,
       image_uri: 'https://d1zu9f2anwwksd.cloudfront.net/QmaDWeeyQFCk4Vj4K5HUhpkACAsDVPKM3w9wrvUZwHmsQ3.svg',
     },
   ],
   'holographic sweater': [
     {
-      wearable_id: '156',
+      id: 156,
       image_uri: 'https://d1zu9f2anwwksd.cloudfront.net/QmWFBjnZVCVHaM1AKTofEnVKcL6qmdzm29guftpSd7thWu.svg',
     },
     {
-      wearable_id: '157',
+      id: 157,
       image_uri: 'https://d1zu9f2anwwksd.cloudfront.net/QmVSkBAuQvD9KPLbMcpJCpr4SmrDh9J2SbgXUFQgWhiwNN.svg',
     },
   ],
   pickle: [
     {
-      wearable_id: '70',
+      id: 70,
       image_uri: 'https://d1zu9f2anwwksd.cloudfront.net/QmWMVYdYZKA3JMRcF3qnZsKhhYPT9yD14k9sfao5pJP2x3.svg',
     },
   ],
   'rainbow puke': [
     {
-      wearable_id: '48',
+      id: 48,
       image_uri: 'https://d1zu9f2anwwksd.cloudfront.net/QmWamcDPvcttpa7h9cb8QBxdvXT7waxZQ8wCodm16npBEH.svg',
     },
     {
-      wearable_id: '49',
+      id: 49,
       image_uri: 'https://d1zu9f2anwwksd.cloudfront.net/QmbLvCHahUqrATz2k1mWBGkySsbayAeWPrLzvEKHjL5FMg.svg',
     },
   ],
   flower: [
     {
-      wearable_id: '67',
+      id: 67,
       image_uri: 'https://d1zu9f2anwwksd.cloudfront.net/QmV9TM6w34Gn2eZWsEQUue9fEQybVbv67Ufb8btcbnyXeK.svg',
     },
   ],
   rainbow: [
     {
-      wearable_id: '55',
+      id: 55,
       image_uri: 'https://d1zu9f2anwwksd.cloudfront.net/QmeaJTJfuw4bAgxjSXRkiKPmHxQx5PrH3ASy5V3WNGyqTq.svg',
     },
   ],
   devil: [
     {
-      wearable_id: '68',
+      id: 68,
       image_uri: 'https://d1zu9f2anwwksd.cloudfront.net/QmTCCokbvdXCHW1pGAw5BPR5E1ZtTpF1xL8bncPy1Scao4.svg',
     },
   ],
   coffee: [
     {
-      wearable_id: '54',
+      id: 54,
       image_uri: 'https://d1zu9f2anwwksd.cloudfront.net/QmcbyY8xJ9J5juWoEcoqBfNMwcb7q2j6mNvMDNY7LfP9oU.svg',
     },
   ],

@@ -57,7 +57,7 @@ interface Doodle {
   costs: WearableCost[]
 }
 type AssumedWearableInfo = {
-  wearable_id: string
+  id: number
   image_uri: string
 }
 type AssumedWearablesMap = {
