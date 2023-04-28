@@ -271,9 +271,10 @@ const assumedWearablesMap: AssumedWearablesMap = {
 
 const DOOPLICATION_BLOCK = 16508485
 const GENESIS_BOX_BLOCK = 16920692
-const IPFS_URL = 'https://wcnft.mypinata.cloud/ipfs'
+// const IPFS_URL = 'https://wcnft.mypinata.cloud/ipfs'
+const IPFS_URL = 'https://alchemy.mypinata.cloud/ipfs'
 const DOODLE_METADATA_URL = `${IPFS_URL}/QmPMc4tcBsMqLRuCQtPmPe84bpSjrC3Ky7t3JWuHXYB4aS`
-const DOOPLICATOR_WEARABLES_URL = 'https://doodles.app/api/dooplicator'
+const DOOPLICATOR_WEARABLES_URL = 'https://home.doodles.app/api/dooplicator'
 const GENESIS_BOX_WEARABLES_URL = 'https://genesisbox.doodles.app/api/wearables'
 const ETHEREUM_RPC_URL = 'https://mainnet.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161'
 const UNKNOWN_WEARABLE = 'https://doodles.app/images/dooplicator/missingDood.png'
