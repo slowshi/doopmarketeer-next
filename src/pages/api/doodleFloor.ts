@@ -22,12 +22,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
   let undooped: UndoopedDoodle[] = []
   const data = response.data
   for (let i = 0; i < data.length; i++) {
-    const { id, imageUrl, currentBasePrice, supportsWyvern } = data[i]
+    const { id, url, currentBasePrice, supportsWyvern } = data[i]
     const wearablesResponse = (await fetchGetWithRetry(`${DOOPLICATOR_WEARABLES_URL}/${id}`)) as DooplicatorWearables
     const isDooplicated =
       wearablesResponse.wearables.filter((wearable: Wearable) => typeof wearable.id === 'undefined').length === 0
     if (!isDooplicated) {
-      undooped = [...undooped, { tokenId: Number(id), marketUrl: imageUrl, currentBasePrice, supportsWyvern }]
+      undooped = [...undooped, { tokenId: Number(id), marketUrl: url, currentBasePrice, supportsWyvern }]
     }
   }
   res.status(200).json(undooped)

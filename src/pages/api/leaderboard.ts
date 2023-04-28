@@ -52,8 +52,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
         dooplicateItem: 0,
         value: 0,
       }
-      const isDooplicate = item.functionName === 'dooplicateItem'
-      const isDooplicateItem = item.functionName === 'dooplicate'
+      const isDooplicate = item.functionName === 'dooplicate'
+      const isDooplicateItem = item.functionName === 'dooplicateItem'
       const isSafeTransferFrom = item.functionName === 'safeTransferFrom'
       if (typeof acc[item.from] === 'undefined') {
         user = {
