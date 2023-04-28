@@ -1,6 +1,11 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 
-import { DOOPLICATOR_ADDRESS, DOOPMARKET_ADDRESS, GENESIS_BOX_OPENER_ADDRESS } from '@/utils/constants'
+import {
+  DOOPLICATOR_ADDRESS,
+  DOOPMARKET_ADDRESS,
+  GENESIS_BOX_BLOCK,
+  GENESIS_BOX_OPENER_ADDRESS,
+} from '@/utils/constants'
 import { contractInternalTransactions, contractTransactions } from '@/utils/etherscanUtils'
 import { GenesisBoxTransactionEvent, Transaction } from '@/interfaces/Etherscan'
 import { DoopTransactionInfo, LeaderboardMap, LeaderboardUser } from '@/interfaces/DoopTransactions'
@@ -9,16 +14,20 @@ import formatTransactionResponse from '@/utils/formatTransactionResponse'
 const getBoxTransactions = async (): Promise<DoopTransactionInfo[]> => {
   let allResults: GenesisBoxTransactionEvent[] = []
   let newResults: GenesisBoxTransactionEvent[] = []
-  let page = 1
-  while (newResults.length > 0 || page === 1) {
-    const res = await contractInternalTransactions(GENESIS_BOX_OPENER_ADDRESS, page, 5000)
+  let lastBlockNumber = GENESIS_BOX_BLOCK
+  while (newResults.length > 0 || lastBlockNumber === GENESIS_BOX_BLOCK) {
+    const res = await contractInternalTransactions(GENESIS_BOX_OPENER_ADDRESS, 1, 9999, lastBlockNumber)
     if (Array.isArray(res.result)) {
-      newResults = res.result
-      allResults = [...allResults, ...newResults]
+      if (lastBlockNumber === Number(res.result[res.result.length - 1].blockNumber)) {
+        newResults = []
+      } else {
+        lastBlockNumber = Number(res.result[res.result.length - 1].blockNumber)
+        newResults = res.result
+        allResults = [...allResults, ...newResults]
+      }
     } else {
       newResults = []
     }
-    page++
   }
   const transactions: DoopTransactionInfo[] = formatGenesisBoxTransactionResponse(allResults)
 
